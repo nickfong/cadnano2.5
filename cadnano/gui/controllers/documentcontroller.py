@@ -355,19 +355,19 @@ class DocumentController():
         :returns: None
         """
         logger.info('In actionSVGSlot')
-        fname = os.path.basename(str(self.fileName()))
-        directory = '.' if fname is None else QFileInfo(fname).path()
+        file_name = os.path.basename(str(self.fileName()))
+        directory = '.' if file_name is None else QFileInfo(file_name).path()
 
-        fdialog = QFileDialog(self.win,
-                              "%s - Save As" % QApplication.applicationName(),
-                              directory,
-                              "%s (*.svg)" % QApplication.applicationName())
-        fdialog.setAcceptMode(QFileDialog.AcceptSave)
-        fdialog.setWindowFlags(Qt.Sheet)
-        fdialog.setWindowModality(Qt.WindowModal)
-        self.svgsavedialog = fdialog
+        file_dialog = QFileDialog(self.win,
+                                  "%s - Save As" % QApplication.applicationName(),
+                                  directory,
+                                  "%s (*.svg)" % QApplication.applicationName())
+        file_dialog.setAcceptMode(QFileDialog.AcceptSave)
+        file_dialog.setWindowFlags(Qt.Sheet)
+        file_dialog.setWindowModality(Qt.WindowModal)
+        self.svgsavedialog = file_dialog
         self.svgsavedialog.filesSelected.connect(self.saveSVGDialogCallback)
-        fdialog.open()
+        file_dialog.open()
 
     # TODO[NF]:  Determine if this is instantiated anywhere; if not, remove it
     class DummyChild(QGraphicsItem):
