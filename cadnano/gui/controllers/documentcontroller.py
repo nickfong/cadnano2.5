@@ -1,23 +1,25 @@
 # -*- coding: utf-8 -*-
+import logging
 import os
 
-from PyQt5.QtCore import Qt, QFileInfo, QRect
-from PyQt5.QtCore import QSettings, QSize, QDir
-from PyQt5.QtGui import QPainter, QKeySequence
-from PyQt5.QtWidgets import QApplication, QDialog
-from PyQt5.QtWidgets import QFileDialog, QActionGroup
-from PyQt5.QtWidgets import QGraphicsItem, QMessageBox
-from PyQt5.QtWidgets import QStyleOptionGraphicsItem
+from PyQt5.QtCore import QDir, QFileInfo, QRect, QSettings, QSize, Qt
+from PyQt5.QtGui import QKeySequence, QPainter
 from PyQt5.QtSvg import QSvgGenerator
-from cadnano.gui.views.documentwindow import DocumentWindow
+from PyQt5.QtWidgets import (QActionGroup, QApplication, QDialog, QFileDialog,
+                             QGraphicsItem, QMessageBox,
+                             QStyleOptionGraphicsItem)
+
+from cadnano import app, setReopen, util
 from cadnano.gui.ui.dialogs.ui_about import Ui_About
 from cadnano.gui.views import styles
-from cadnano import app, setReopen, util
+from cadnano.gui.views.documentwindow import DocumentWindow
+
 
 DEFAULT_VHELIX_FILTER = True
-ONLY_ONE = True
-"""bool: Retricts Document to creating only one Part if True."""
+ONLY_ONE_PART = True
 
+logging.basicConfig(format='%(asctime)s %(message)s', level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 class DocumentController():
     """
@@ -346,12 +348,15 @@ class DocumentController():
         self.saveFileDialog()
 
     def actionSVGSlot(self):
-        """docstring for actionSVGSlot"""
+        """Create a dialog to prompt the user to save a SVG of the current design.
+
+        Calls saveSVGDialogCallback as a callback.
+
+        :returns: None
+        """
+        logger.info('In actionSVGSlot')
         fname = os.path.basename(str(self.fileName()))
-        if fname is None:
-            directory = "."
-        else:
-            directory = QFileInfo(fname).path()
+        directory = '.' if fname is None else QFileInfo(fname).path()
 
         fdialog = QFileDialog(self.win,
                               "%s - Save As" % QApplication.applicationName(),
@@ -364,6 +369,7 @@ class DocumentController():
         self.svgsavedialog.filesSelected.connect(self.saveSVGDialogCallback)
         fdialog.open()
 
+    # TODO[NF]:  Determine if this is instantiated anywhere; if not, remove it
     class DummyChild(QGraphicsItem):
         def boundingRect(self):
             return QRect(200, 200)  # self.parentObject().boundingRect()
@@ -372,22 +378,30 @@ class DocumentController():
             pass
 
     def saveSVGDialogCallback(self, selected):
-        if isinstance(selected, (list, tuple)):
-            fname = selected[0]
-        else:
-            fname = selected
-        print("da fname", fname)
-        if fname is None or os.path.isdir(fname):
+        """Callback for saving SVGs of the current design.
+
+        :returns: True if the save operation was successful, False otherwise
+        """
+        logger.debug('In saveSVGDialogCallback')
+        file_name = selected[0] if isinstance(selected, (list, tuple)) else selected
+        assert isinstance(file_name, str)
+
+        if file_name is None or os.path.isdir(file_name):
+            logger.info('Aborting saving of SVG')
             return False
-        if not fname.lower().endswith(".svg"):
-            fname += ".svg"
+
+        if not file_name.lower().endswith('.svg'):
+            file_name += '.svg'
+
+        logger.info('Saving SVG to %s', file_name)
+
         if self.svgsavedialog is not None:
             self.svgsavedialog.filesSelected.disconnect(self.saveSVGDialogCallback)
             del self.svgsavedialog  # prevents hang
             self.svgsavedialog = None
 
         generator = QSvgGenerator()
-        generator.setFileName(fname)
+        generator.setFileName(file_name)
         generator.setSize(QSize(200, 330))
         generator.setViewBox(QRect(0, 0, 2000, 2000))
         painter = QPainter()
@@ -398,7 +412,6 @@ class DocumentController():
         # painter.end()
 
         # Render item-by-item
-        painter = QPainter()
         style_option = QStyleOptionGraphicsItem()
         q = [self.win.pathroot]
         painter.begin(generator)
@@ -410,6 +423,8 @@ class DocumentController():
                 graphics_item.paint(painter, style_option, None)
                 q.extend(graphics_item.childItems())
         painter.end()
+
+        return os.path.isfile(file_name)
 
     def actionExportSequencesSlot(self):
         """
@@ -485,7 +500,7 @@ class DocumentController():
         pass
 
     def actionCreateNucleicAcidPart(self):
-        if ONLY_ONE:
+        if ONLY_ONE_PART:
             self.newDocument()  # only allow one part for now
         doc = self._document
         part = doc.createNucleicAcidPart()
@@ -658,7 +673,7 @@ class DocumentController():
         self.win.slice_graphics_view.setViewportUpdateOn(False)
 
         # NC commented out single document stuff
-        if ONLY_ONE:
+        if ONLY_ONE_PART:
             self.newDocument(fname=fname)
 
         self._document.readFile(fname)
