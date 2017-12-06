@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+from cadnano.math.vector import addVectors, multiplyScalar, subVectors, Vector3
+
+
 class Box(object):
     """Cube box object
 
@@ -37,43 +40,45 @@ class Box(object):
             bool:  True if the specified point lies within the boundaries
                 of this box False otherwise
         """
-        if point.x < self.min_pt.x or point.x > self.max_pt.x or \
-                point.y < self.min_pt.y or point.y > self.max_pt.y or \
-                point.z < self.min_pt.z or point.z > self.max_pt.z:
-            return False
-        else:
-            return True
+        return not (point.x < self.min_pt.x
+                    or point.x > self.max_pt.x
+                    or point.y < self.min_pt.y
+                    or point.y > self.max_pt.y
+                    or point.z < self.min_pt.z
+                    or point.z > self.max_pt.z)
     # end def
 
     def containsBox(self, box):
         """ Does this object contain the Box box?
 
         Args:
-            Box:
+            box ():
 
         Returns:
             bool: True if `box` is in `self` otherwise False
         """
-        if (self.min_pt.x <= box.min_pt.x) and (box.max_pt.x <= self.max_pt.x) and \
-            (self.min_pt.y <= box.min_pt.y) and (box.max_pt.y <= self.max_pt.y) and \
-                (self.min_pt.z <= box.min_pt.z) and (box.max_pt.z <= self.max_pt.z):
-            return True
-        return False
+        return (self.min_pt.x <= box.min_pt.x
+                and box.max_pt.x <= self.max_pt.x
+                and self.min_pt.y <= box.min_pt.y
+                and box.max_pt.y <= self.max_pt.y
+                and self.min_pt.z <= box.min_pt.z
+                and box.max_pt.z <= self.max_pt.z)
     # end def
 
     def doesBoxSpan(self, box):
         """ doe this object contain the Box `box`?
         Args:
-            Box:
+            box ():
 
         Returns:
             bool: True if `box` spans `self` otherwise False
         """
-        if (self.min_pt.x <= box.min_pt.x) and (box.max_pt.x <= self.max_pt.x) and \
-            (self.min_pt.y <= box.min_pt.y) and (box.max_pt.y <= self.max_pt.y) and \
-                (self.min_pt.z <= box.min_pt.z) and (box.max_pt.z <= self.max_pt.z):
-            return True
-        return False
+        return (self.min_pt.x <= box.min_pt.x
+                and box.max_pt.x <= self.max_pt.x
+                and self.min_pt.y <= box.min_pt.y
+                and box.max_pt.y <= self.max_pt.y
+                and self.min_pt.z <= box.min_pt.z
+                and box.max_pt.z <= self.max_pt.z)
     # end def
 
     def clone(self):
