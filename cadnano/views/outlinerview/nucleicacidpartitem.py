@@ -1,3 +1,4 @@
+<<<<<<< HEAD:cadnano/views/outlinerview/nucleicacidpartitem.py
 from PyQt5.QtCore import QItemSelectionModel
 from cadnano.proxies.cnenum import ItemType
 from cadnano.views import styles
@@ -32,19 +33,45 @@ class OutlineNucleicAcidPartItem(CNOutlinerItem, AbstractPartItem):
         if model_part.is_active:
             print("should be active")
             self.activate()
+=======
+from cadnano.cnenum import ItemType
+from cadnano.gui.controllers.itemcontrollers.nucleicacidpartitemcontroller import NucleicAcidPartItemController
+from cadnano.gui.views.abstractitems.abstractpartitem import AbstractPartItem
+#from cadnano.gui.views.abstractitems.abstractpartitem import QAbstractPartItem
+
+
+#class ConsoleNucleicAcidPartItem(QAbstractPartItem):
+class ConsoleNucleicAcidPartItem(AbstractPartItem):
+    FILTER_NAME = 'part'
+
+    def __init__(self, model_part, viewroot, parent):
+        super(ConsoleNucleicAcidPartItem, self).__init__()
+#        super(ConsoleNucleicAcidPartItem, self).__init__(model_part, viewroot, parent)
+        self._controller = NucleicAcidPartItemController(self, model_part)
+        self._model_part = model_part
+        self._parent = parent
+
+        self._virtual_helix_item_hash = dict()
+>>>>>>> 2.5.0:  Add console support for napartitem:cadnano/gui/views/consoleview/nucleicacidpartitem.py
     # end def
 
     ### PRIVATE SUPPORT METHODS ###
     def __repr__(self):
+<<<<<<< HEAD:cadnano/views/outlinerview/nucleicacidpartitem.py
         return "OutlineNucleicAcidPartItem %s" % self._cn_model.getProperty('name')
+=======
+        try:
+            return 'ConsoleNucleicAcidPartItem %s' % self._model_part.getProperty('name')
+        except AttributeError:
+            return 'ConsoleNucleicAcidPartItem'
+>>>>>>> 2.5.0:  Add console support for napartitem:cadnano/gui/views/consoleview/nucleicacidpartitem.py
 
     ### PUBLIC SUPPORT METHODS ###
-    def rootItems(self):
-        return self._root_items
-    # end def
+    def log(self, message):
+        self._parent.log(message)
 
     def part(self):
-        return self._cn_model
+        return self._model_part
     # end def
 
     def itemType(self):
@@ -52,38 +79,48 @@ class OutlineNucleicAcidPartItem(CNOutlinerItem, AbstractPartItem):
     # end def
 
     def isModelSelected(self, document):
-        """Make sure the item is selected in the model
+        '''Make sure the item is selected in the model
         TODO implement Part selection
 
         Args:
             document (Document): reference the the model :class:`Document`
-        """
+        '''
         return False
     # end def
 
     ### SLOTS ###
     def partRemovedSlot(self, sender):
+        self.log('Part removed')
         self._controller.disconnectSignals()
-        self._cn_model = None
+        self._model_part = None
         self._controller = None
     # end def
 
     def partOligoAddedSlot(self, model_part, model_oligo):
+<<<<<<< HEAD:cadnano/views/outlinerview/nucleicacidpartitem.py
         m_o = model_oligo
         m_o.oligoRemovedSignal.connect(self.partOligoRemovedSlot)
         o_i = OutlineOligoItem(m_o, self._root_items['OligoList'])
         self._oligo_item_hash[m_o] = o_i
+=======
+        model_oligo.oligoRemovedSignal.connect(self.partOligoRemovedSlot)
+        self.log('Added oligo %s' % model_oligo)
+#        m_o = model_oligo
+#        o_i = ConsoleOligoItem(m_o, self._root_items['OligoList'])
+#        self._oligo_item_hash[m_o] = o_i
+>>>>>>> 2.5.0:  Add console support for napartitem:cadnano/gui/views/consoleview/nucleicacidpartitem.py
     # end def
 
     def partOligoRemovedSlot(self, model_part, model_oligo):
-        m_o = model_oligo
-        m_o.oligoRemovedSignal.disconnect(self.partOligoRemovedSlot)
-        o_i = self._oligo_item_hash[m_o]
-        o_i.parent().removeChild(o_i)
-        del self._oligo_item_hash[m_o]
+        self.log('Removed oligo %s' % model_oligo)
+#        m_o = model_oligo
+#        o_i = self._oligo_item_hash[m_o]
+#        o_i.parent().removeChild(o_i)
+#        del self._oligo_item_hash[m_o]
     # end def
 
     def partVirtualHelixAddedSlot(self, model_part, id_num, virtual_helix, neighbors):
+<<<<<<< HEAD:cadnano/views/outlinerview/nucleicacidpartitem.py
         tw = self.treeWidget()
         tw.is_child_adding += 1
         vh_i = OutlineVirtualHelixItem(virtual_helix, self._root_items['VHelixList'])
@@ -94,11 +131,20 @@ class OutlineNucleicAcidPartItem(CNOutlinerItem, AbstractPartItem):
         vh_i = self._virtual_helix_item_hash.get(id_num)
         # in case a OutlineVirtualHelixItem Object is cleaned up before this happends
         if vh_i is not None:
+=======
+        self._virtual_helix_item_hash[id_num] = virtual_helix
+        self.log('%s added' % virtual_helix)
+
+    def partVirtualHelixRemovingSlot(self, model_part, id_num, virtual_helix, neigbors):
+        self.log('%s removed' % virtual_helix)
+
+        if self._virtual_helix_item_hash.get(id_num) is not None:
+>>>>>>> 2.5.0:  Add console support for napartitem:cadnano/gui/views/consoleview/nucleicacidpartitem.py
             del self._virtual_helix_item_hash[id_num]
-            vh_i.parent().removeChild(vh_i)
     # end def
 
     def partPropertyChangedSlot(self, model_part, property_key, new_value):
+<<<<<<< HEAD:cadnano/views/outlinerview/nucleicacidpartitem.py
         if self._cn_model == model_part:
             self.setValue(property_key, new_value)
             if property_key == 'virtual_helix_order':
@@ -122,12 +168,23 @@ class OutlineNucleicAcidPartItem(CNOutlinerItem, AbstractPartItem):
     def partSelectedChangedSlot(self, model_part, is_selected):
         # print("part", is_selected)
         self.setSelected(is_selected)
+=======
+        if self._model_part == model_part:
+            print('partPropertyChanged', model_part, property_key, new_value)
+    # end def
+
+    def partSelectedChangedSlot(self, model_part, is_selected):
+        self.log('%s is selected' % model_part) if is_selected else self.log('%s is deselected' % model_part)
+>>>>>>> 2.5.0:  Add console support for napartitem:cadnano/gui/views/consoleview/nucleicacidpartitem.py
     # end def
 
     def partVirtualHelixPropertyChangedSlot(self, sender, id_num, virtual_helix, keys, values):
-        if self._cn_model == sender:
+        print(self._model_part)
+        print(sender)
+        if self._model_part == sender:
             vh_i = self._virtual_helix_item_hash[id_num]
             for key, val in zip(keys, values):
+<<<<<<< HEAD:cadnano/views/outlinerview/nucleicacidpartitem.py
                 if key in CNOutlinerItem.PROPERTIES:
                     vh_i.setValue(key, val)
     # end def
@@ -166,17 +223,31 @@ class OutlineNucleicAcidPartItem(CNOutlinerItem, AbstractPartItem):
                     # print("-----slot deselect outlinerview", vh_set)
                     selection_model.select(qmodel_idx, flag)
         tw.selection_filter_disabled = False
+=======
+                self.log('%s:  Changing %s to %s' % (vh_i, key, val))
+#                if key in CNConsoleItem.PROPERTIES:
+#                    vh_i.setValue(key, val)
+    # end def
+
+    def partVirtualHelicesSelectedSlot(self, sender, vh_set, is_adding):
+        self.log('Selected %s' % str(vh_set) if is_adding else 'Deselected %s' % str(vh_set))
+>>>>>>> 2.5.0:  Add console support for napartitem:cadnano/gui/views/consoleview/nucleicacidpartitem.py
     # end def
 
     def partActiveVirtualHelixChangedSlot(self, part, id_num):
-        vhi = self._virtual_helix_item_hash.get(id_num, None)
-        # if vhi is not None:
-        self.setActiveVirtualHelixItem(vhi)
+        vhi = self._virtual_helix_item_hash.get(id_num)
+#        self.setActiveVirtualHelixItem(vhi)
     # end def
 
     def partActiveChangedSlot(self, part, is_active):
+<<<<<<< HEAD:cadnano/views/outlinerview/nucleicacidpartitem.py
         if part == self._cn_model:
             self.activate() if is_active else self.deactivate()
+=======
+        pass
+        # if part == self._model_part:
+        #     self.activate() if is_active else self.deactivate()
+>>>>>>> 2.5.0:  Add console support for napartitem:cadnano/gui/views/consoleview/nucleicacidpartitem.py
     # end def
 
     def setActiveVirtualHelixItem(self, new_active_vhi):

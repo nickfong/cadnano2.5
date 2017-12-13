@@ -68,7 +68,6 @@ class ConsoleRootWidget(QWidget):
         part_type = model_part_instance.reference().partType()
         if part_type == PartType.NUCLEICACIDPART:
             self.log('%s added' % model_part_instance.reference())
-
             na_part_item = ConsoleNucleicAcidPartItem(model_part_instance.reference(),
                                                       viewroot=self,
                                                       parent=self)
