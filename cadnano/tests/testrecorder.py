@@ -27,14 +27,11 @@ recorder.py
 Created by Shawn on 2011-06-30.
 """
 
-import os
 import glob
 from cadnano import app
-from model.enum import LatticeType
-import util
+from cadnano.cnenum import GridType
 
-util.qtWrapImport('QtCore', globals(), ['Qt', 'QPoint', 'QPointF',
-                                        'QEvent', 'pyqtSlot'])
+from PyQt5.QtCore import Qt, QPoint, QPointF, QEvent, pyqtSlot
 
 
 class TestRecorder(object):
@@ -58,19 +55,19 @@ class TestRecorder(object):
         self.ops = []  # user operations
         self.pathActions = {}  # path actions dict
         self.seenActiveSliceHandle = False
-        self.latticeType = None
+        self.gridType = None
 
-    def setPart(self, latticeType):
-        self.latticeType = latticeType
+    def setPart(self, gridType):
+        self.gridType = gridType
 
     @pyqtSlot(str)
     def activePathToolChangedSlot(self, actionName):
         """
-        When the active PathTool is changed, record the name of its 
+        When the active PathTool is changed, record the name of its
         corresponding action for playback initialization by initPathButtons,
-        and then push the click onto the 
+        and then push the click onto the
         """
-        if not actionName in self.pathActions:
+        if actionName not in self.pathActions:
             self.pathActions[actionName] = True
         buttonName = actionName + "Button"
         op = self.getButtonOp(actionName)
@@ -99,14 +96,14 @@ class TestRecorder(object):
 
     def getOp(self, target, event, scene):
         """Convert the event info into a string adding to the ops list."""
-        type = None
+        event_type = None
         if event.type() == QEvent.GraphicsSceneMousePress:
-            type = "mousePress"
+            event_type = "mousePress"
         if event.type() == QEvent.GraphicsSceneMouseMove:
-            type = "mouseMove"
+            event_type = "mouseMove"
         if event.type() == QEvent.GraphicsSceneMouseRelease:
-            type = "mouseRelease"
-        if type:  # did we recognize the event type?
+            event_type = "mouseRelease"
+        if event_type:  # did we recognize the event type?
             position = " position=QPoint(%d, %d)," % (int(event.pos().x()),
                                                       int(event.pos().y()))
             if event.button() == Qt.RightButton:
@@ -117,14 +114,12 @@ class TestRecorder(object):
                 button = ""  # will default to left
             modifiers = " modifiers=%s," % self.getModifierString(event)
             qgraphicsscene = " qgraphicsscene=self.mainWindow.%s" % scene
-            return """self.%s(%s,%s%s%s%s)\n""" % (type,
+            return """self.%s(%s,%s%s%s%s)\n""" % (event_type,
                                                    target,
                                                    position,
                                                    button,
                                                    modifiers,
                                                    qgraphicsscene)
-        else:
-            return None
 
     def getButtonOp(self, actionName):
         """docstring for get"""
@@ -134,9 +129,9 @@ class TestRecorder(object):
 
     def getModifierString(self, event):
         mods = []
-        if (event.modifiers() & Qt.AltModifier):
+        if event.modifiers() & Qt.AltModifier:
             mods.append("Qt.AltModifier")
-        if (event.modifiers() & Qt.ShiftModifier):
+        if event.modifiers() & Qt.ShiftModifier:
             mods.append("Qt.ShiftModifier")
         if len(mods) > 0:
             modifiers = '|'.join(mods)
@@ -150,10 +145,11 @@ class TestRecorder(object):
         functionality be replaced by initDocButtons and simply including
         clicks to actionNewHoneycombPart or actionNewSquarePart as user ops.
         """
-        if self.latticeType == LatticeType.Honeycomb:
-            ret = indent + "partButton = self.mainWindow.topToolBar.widgetForAction(self.mainWindow.actionNewHoneycombPart)\n" + indent + "self.click(partButton)\n"
+        prefix = 'partButton = self.window.main_toolbar.widgetForAction(self.window.'
+        if self.gridType == GridType.HONEYCOMB:
+            ret = indent + prefix + "action_new_honeycomb_part)\n" + indent + "self.click(partButton)\n"
         else:
-            ret = indent + "partButton = self.mainWindow.topToolBar.widgetForAction(self.mainWindow.actionNewSquarePart)\n" + indent + "self.click(partButton)\n"
+            ret = indent + prefix + "action_new_square_part)\n" + indent + "self.click(partButton)\n"
         return ret
 
     def initMenu(self, indent):
@@ -183,8 +179,8 @@ class TestRecorder(object):
         ret = ""
         for actionName in self.pathActions:
             buttonName = actionName + "Button"
-            ret = ret + indent +\
-                "%s = self.mainWindow.rightToolBar.widgetForAction(self.mainWindow.%s)\n"\
+            ret = ret + indent + \
+                "%s = self.window.rightToolBar.widgetForAction(self.mainWindow.%s)\n" \
                 % (buttonName, actionName)
         return ret
 
@@ -201,30 +197,29 @@ class TestRecorder(object):
 
     def generateTest(self):
         """Called by documentcontroller.closer()"""
-        if self.latticeType == None:
+        if self.gridType is None:
             return  # nothing to record
         # build the new test string
-        indent = "".join(" " for i in range(4))
+        indent = "".join(" " for _ in range(4))
         newtest = self.testTemplate % (self.createPart(indent),
                                        self.initPathButtons(indent),
                                        self.createUserInput(indent),
                                        self.checkAgainstModel(indent))
         # write to the next file
         oldtests = glob.glob("tests/recordedtests/recordedtest_*.py")  # get all the recorded tests
-        name = "tests/recordedtests/recordedtest_%03d.py" % len(oldtests)
-        f = open(name, 'w')
-        f.write(newtest)
-        f.close()
+        file_name = "tests/recordedtests/recordedtest_%03d.py" % len(oldtests)
+        with open(file_name, 'w') as f_test:
+            f_test.write(newtest)
+
         # also save the test in lastrecordedtest.py for debugging
-        indent = "".join(" " for i in range(8))
+        indent = "".join(" " for _ in range(8))
         newtest2 = self.testTemplate2 % (self.createPart(indent),
                                          self.initPathButtons(indent),
                                          self.createUserInput(indent),
                                          self.checkAgainstModel(indent))
-        name = "test/lastrecordedtest.py"
-        f = open(name, 'w')
-        f.write(newtest2)
-        f.close()
+        debug_file_name = "test/lastrecordedtest.py"
+        with open(debug_file_name, 'w') as f_debug:
+            f_debug.write(newtest2)
 
     testTemplate = """
 # The MIT License
@@ -251,13 +246,14 @@ class TestRecorder(object):
 #
 # http://www.opensource.org/licenses/mit-license.php
 
-from PyQt4.QtCore import Qt, QPoint
+from PyQt5.QtCore import Qt, QPoint
 
 
 def testMethod(self):
     # Create part
 %s
     # Init refs
+    doc = self.
     sgi = self.documentController.sliceGraphicsItem
     phg = self.documentController.pathHelixGroup
     ash = self.documentController.pathHelixGroup.activeSliceHandle()
@@ -298,8 +294,8 @@ def testMethod(self):
 
 
 import sys
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
 import tests.cadnanoguitestcase
 from tests.cadnanoguitestcase import CadnanoGuiTestCase
 
@@ -312,6 +308,7 @@ class LastRecordedTest(CadnanoGuiTestCase):
     cadnano2 root directory.
     \"\"\"
     def setUp(self):
+        # There is no setUp method...
         CadnanoGuiTestCase.setUp(self)
 
     def tearDown(self):
