@@ -142,7 +142,8 @@ install_requires = ['sip>=4.19',
                     'pandas>=0.18',
                     'pytz>=2011k',
                     'python-dateutil>=2',
-                    'termcolor>=1.1.0'
+                    'termcolor>=1.1.0',
+                    'gitpython>=2.1.8'
                     ]
 
 if sys.platform == 'win32':
