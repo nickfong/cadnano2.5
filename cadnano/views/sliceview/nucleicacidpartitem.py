@@ -1,6 +1,6 @@
 from ast import literal_eval
 
-from PyQt5.QtCore import QPointF, QRectF, Qt
+from PyQt5.QtCore import QPointF, QRectF, Qt, QEvent
 from PyQt5.QtWidgets import QGraphicsItem, QGraphicsLineItem, QGraphicsRectItem, QGraphicsSceneEvent
 
 from cadnano.proxies.cnenum import GridType, HandleType
@@ -10,6 +10,7 @@ from cadnano.gui.palette import getBrushObj, getNoBrush, getNoPen, getPenObj
 from cadnano.views.abstractitems.abstractpartitem import QAbstractPartItem
 from cadnano.views.resizehandles import ResizeHandleGroup
 from cadnano.views.sliceview.sliceextras import ShortestPathHelper
+from cadnano.tests.testrecorder import TestRecorder
 from . import slicestyles as styles
 from .griditem import GridItem
 from .prexovermanager import PreXoverManager
@@ -77,6 +78,8 @@ class SliceNucleicAcidPartItem(QAbstractPartItem):
         self.setAcceptHoverEvents(True)
 
         self.shortest_path_add_mode = False
+
+        self.test_recorder = self.parentItem().test_recorder
 
         # Cache of VHs that were active as of last call to activeSliceChanged
         # If None, all slices will be redrawn and the cache will be filled.
@@ -643,15 +646,38 @@ class SliceNucleicAcidPartItem(QAbstractPartItem):
     # end def
 
     ### EVENT HANDLERS ###
+    def sceneEvent(self, event):
+        """
+        Args:
+            event (QEvent):
+
+        Returns:
+            True if the event was handled, False otherwise
+        """
+        if isinstance(self.test_recorder, TestRecorder):
+            #            print('passing event')
+            self.test_recorder.sliceSceneEvent(event, self)
+
+        if event.type() == QEvent.GraphicsSceneHoverMove:
+            self.hoverMoveEvent(event)
+        #        elif event.type() == QEvent.KeyPress:
+        #            self.keyPressEvent(event)
+        #        elif event.type() == QEvent.KeyRelease:
+        #            self.keyReleaseEvent(event)
+        elif event.type() == QEvent.GraphicsSceneMousePress:
+            self.mousePressEvent(event)
+        else:
+            print(event.type())
+            return False
+        return True
+    # end def
+
     def mousePressEvent(self, event):
         """Handler for user mouse press.
 
         Args:
             event (QGraphicsSceneMouseEvent): Contains item, scene, and screen
             coordinates of the the event, and previous event.
-
-        Args:
-            event (QMouseEvent): contains parameters that describe a mouse event.
         """
         if event.button() == Qt.RightButton:
             return
@@ -781,13 +807,98 @@ class SliceNucleicAcidPartItem(QAbstractPartItem):
             self._highlightSpaVH(id_num)
     # end def
 
-    def _getCoordinateParity(self, row, column):
+    def selectToolMousePress(self, tool, event):
+        """
+        Args:
+            tool (TYPE): Description
+            event (TYPE): Description
+        """
+        tool.setPartItem(self)
+        pt = tool.eventToPosition(self, event)
+        part_pt_tuple = self.getModelPos(pt)
+        part = self._model_part
+        if part.isVirtualHelixNearPoint(part_pt_tuple):
+            id_num = part.getVirtualHelixAtPoint(part_pt_tuple)
+            if id_num is not None:
+                pass
+                # loc = part.getCoordinate(id_num, 0)
+                # print("VirtualHelix #{} at ({:.3f}, {:.3f})".format(id_num, loc[0], loc[1]))
+            else:
+                # tool.deselectItems()
+                tool.modelClear()
+        else:
+            # tool.deselectItems()
+            tool.modelClear()
+        return QGraphicsItem.mousePressEvent(self, event)
+    # end def
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Escape:
+            self._setShortestPathStart(None)
+            self.removeAllCreateHints()
+            if self._inPointItem(self.last_mouse_position, self.getLastHoveredCoordinates()):
+                self.highlightOneGridPoint(self.getLastHoveredCoordinates())
+        elif event.key() == Qt.Key_Shift and self.shortest_path_add_mode is True:
+            if self._inPointItem(self.last_mouse_position, self.getLastHoveredCoordinates()):
+                x, y = self.coordinates_to_xy.get(self.getLastHoveredCoordinates())
+                self._preview_spa((x, y))
+
+        if isinstance(self.test_recorder, TestRecorder):
+            self.test_recorder.sliceSceneEvent(event, self)
+#            print('press yep %s' % type(self.test_recorder))
+#        else:
+#            print('press nope %s' % type(self.test_recorder))
+    # end def
+
+    def keyReleaseEvent(self, event):
+        if event.key() == Qt.Key_Shift and self.shortest_path_add_mode is True:
+            self.removeAllCreateHints()
+            if self._inPointItem(self.last_mouse_position, self.getLastHoveredCoordinates()):
+                self.highlightOneGridPoint(self.getLastHoveredCoordinates())
+
+        if isinstance(self.test_recorder, TestRecorder):
+            self.test_recorder.sliceSceneEvent(event, self)
+#            print('release yep %s' % type(self.test_recorder))
+#        else:
+#            print('release nope %s' % type(self.test_recorder))
+    # end def
+
+    def createToolHoverLeave(self, tool, event):
+        self.removeAllCreateHints()
+    # end def
+
+    def getModelPos(self, pos):
+        """Y-axis is inverted in Qt +y === DOWN
+
+        Args:
+            pos (TYPE): Description
+        """
+        sf = self.scale_factor
+        x, y = pos.x()/sf, -1.0*pos.y()/sf
+        return x, y
+    # end def
+
+    def getVirtualHelixItem(self, id_num):
+        """Summary
+
+        Args:
+            id_num (int): VirtualHelix ID number. See `NucleicAcidPart` for description and related methods.
+
+        Returns:
+            TYPE: Description
+        """
+        return self._virtual_helix_item_hash.get(id_num)
+    # end def
+
+
+    def _getCoordianteParity(self, row, column):
         if self.griditem.grid_type is GridType.HONEYCOMB:
             return 0 if HoneycombDnaPart.isOddParity(row=row, column=column) else 1
         elif self.griditem.grid_type is GridType.SQUARE:
             return 0 if SquareDnaPart.isEvenParity(row=row, column=column) else 1
         else:
             return None
+    # end def
 
     def _handleShortestPathMousePress(self, tool, position, is_spa_mode):
         """
@@ -816,6 +927,7 @@ class SliceNucleicAcidPartItem(QAbstractPartItem):
                 self._setShortestPathStart(position)
         else:
             self._setShortestPathStart(None)
+    # end def
 
     def _setShortestPathStart(self, position):
         # TODO[NF]:  Docstring
@@ -826,6 +938,7 @@ class SliceNucleicAcidPartItem(QAbstractPartItem):
             self.shortest_path_add_mode = False
             self.shortest_path_start = None
             self._highlightSpaVH(None)
+    # end def
 
     def _highlightSpaVH(self, vh_id):
         # TODO[NF]:  Docstring
@@ -964,34 +1077,6 @@ class SliceNucleicAcidPartItem(QAbstractPartItem):
                 odd_id += 2
             elif is_odd is False:
                 even_id += 2
-    # end def
-
-    def createToolHoverLeave(self, tool, event):
-        self.removeAllCreateHints()
-
-    def selectToolMousePress(self, tool, event):
-        """
-        Args:
-            tool (TYPE): Description
-            event (TYPE): Description
-        """
-        tool.setPartItem(self)
-        pt = tool.eventToPosition(self, event)
-        part_pt_tuple = self.getModelPos(pt)
-        part = self._model_part
-        if part.isVirtualHelixNearPoint(part_pt_tuple):
-            id_num = part.getVirtualHelixAtPoint(part_pt_tuple)
-            if id_num is not None:
-                pass
-                # loc = part.getCoordinate(id_num, 0)
-                # print("VirtualHelix #{} at ({:.3f}, {:.3f})".format(id_num, loc[0], loc[1]))
-            else:
-                # tool.deselectItems()
-                tool.modelClear()
-        else:
-            # tool.deselectItems()
-            tool.modelClear()
-        return QGraphicsItem.mousePressEvent(self, event)
     # end def
 
     def setNeighborMap(self, neighbor_map):

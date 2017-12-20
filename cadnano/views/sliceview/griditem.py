@@ -1,5 +1,5 @@
-from PyQt5.QtCore import QPointF
-from PyQt5.QtGui import QFont, QPainterPath
+from PyQt5.QtCore import QPointF, Qt, QEvent
+from PyQt5.QtGui import QColor, QFont, QPainterPath
 from PyQt5.QtWidgets import QGraphicsItem
 from PyQt5.QtWidgets import QGraphicsEllipseItem, QGraphicsPathItem, QGraphicsRectItem, QGraphicsSimpleTextItem
 
@@ -7,7 +7,7 @@ from cadnano.proxies.cnenum import GridType
 from cadnano.fileio.lattice import HoneycombDnaPart, SquareDnaPart
 from cadnano.gui.palette import getBrushObj, getNoBrush, getNoPen, getPenObj
 from cadnano.views.sliceview import slicestyles as styles
-
+from cadnano.tests.testrecorder import TestRecorder
 
 _RADIUS = styles.SLICE_HELIX_RADIUS
 _ZVALUE = styles.ZSLICEHELIX + 1
@@ -28,6 +28,8 @@ class GridItem(QGraphicsRectItem):
         """
         super(GridItem, self).__init__(parent=part_item)
         self.setFlag(QGraphicsItem.ItemClipsChildrenToShape)
+
+        self.test_recorder = self.parentItem().test_recorder
 
         self._path = None
         self.part_item = part_item
@@ -365,6 +367,10 @@ class ClickArea(QGraphicsEllipseItem):
         """Triggered when the mouse is released anywhere on the grid."""
         return self.parent_obj.mouseReleaseEvent(event)
     # end def
+
+    def sceneEvent(self, event):
+        return self.parent_obj.sceneEvent(event)
+    # end def
 # end class
 
 
@@ -390,6 +396,8 @@ class GridPoint(QGraphicsEllipseItem):
         self.setPos(x, y)
         self.setZValue(_ZVALUE)
         self.setAcceptHoverEvents(True)
+
+        self.test_recorder = self.parentItem().test_recorder
     # end def
 
     def showCreateHint(self, id_num=0, show_hint=True, color=None):
@@ -418,6 +426,26 @@ class GridPoint(QGraphicsEllipseItem):
             row, column = self._coord
             return row, column
     # end def
+
+    def sceneEvent(self, event):
+        if isinstance(self.test_recorder, TestRecorder):
+            self.test_recorder.sliceSceneEvent(event, self)
+
+        if event.type() == QEvent.GraphicsSceneMousePress:
+            self.mousePressEvent(event)
+        elif event.type() == QEvent.GraphicsSceneMouseRelease:
+            self.mouseReleaseEvent(event)
+        elif event.type() == QEvent.GraphicsSceneMouseMove:
+            self.mouseMoveEvent(event)
+        elif event.type() == QEvent.GraphicsSceneHoverMove:
+            self.hoverMoveEvent(event)
+        elif event.type() == QEvent.GraphicsSceneHoverEnter:
+            self.hoverEnterEvent(event)
+        elif event.type() == QEvent.GraphicsSceneHoverLeave:
+            self.hoverLeaveEvent(event)
+        else:
+            return False
+        return True
 
     def mousePressEvent(self, event):
         """Handler for user mouse press.

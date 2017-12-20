@@ -39,6 +39,7 @@ class SliceRootItem(QGraphicsRectItem):
         self.instance_items = {}
         self.manager = None
         self.select_tool = None
+        self.test_recorder = None
     ### SIGNALS ###
 
     ### SLOTS ###

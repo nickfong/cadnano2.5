@@ -24,6 +24,7 @@ from cadnano.views.sliceview.tools.slicetoolmanager import SliceToolManager
 # from PyQt5.QtOpenGL import QGLWidget
 # # check out https://github.com/baoboa/pyqt5/tree/master/examples/opengl
 # # for an example of the QOpenGlWidget added in Qt 5.4
+from cadnano.tests.testrecorder import TestRecorder
 
 
 class DocumentWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
@@ -39,6 +40,7 @@ class DocumentWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
         super(DocumentWindow, self).__init__(parent)
 
         self.controller = doc_ctrlr
+        self.test_recorder = TestRecorder()
         doc = doc_ctrlr.document()
         self.setupUi(self)
         self.settings = QSettings()
@@ -266,6 +268,7 @@ class DocumentWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
                                         window=self,
                                         document=doc)
         self.slice_root.setFlag(QGraphicsItem.ItemHasNoContents)
+        self.slice_root.test_recorder = self.test_recorder
         self.slice_scene.addItem(self.slice_root)
         self.slice_scene.setItemIndexMethod(QGraphicsScene.NoIndex)
         assert self.slice_root.scene() == self.slice_scene
