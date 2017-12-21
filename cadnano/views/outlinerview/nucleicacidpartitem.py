@@ -36,15 +36,14 @@ class OutlineNucleicAcidPartItem(CNOutlinerItem, AbstractPartItem):
 
     ### PRIVATE SUPPORT METHODS ###
     def __repr__(self):
+        _id = str(id(self))[-4:]
+        _name  = self.__class__.__name__
         try:
-            return 'ConsoleNucleicAcidPartItem %s' % self._model_part.getProperty('name')
+            return '%s_%s_%s' % (_name, self._model_part.getProperty('name'), _id)
         except AttributeError:
-            return 'ConsoleNucleicAcidPartItem'
+            return '%s_%s_%s' % (_name, '', _id)
 
     ### PUBLIC SUPPORT METHODS ###
-    def log(self, message):
-        self._parent.log(message)
-
     def part(self):
         return self._model_part
     # end def
@@ -65,7 +64,6 @@ class OutlineNucleicAcidPartItem(CNOutlinerItem, AbstractPartItem):
 
     ### SLOTS ###
     def partRemovedSlot(self, sender):
-        self.log('Part removed')
         self._controller.disconnectSignals()
         self._model_part = None
         self._controller = None
@@ -76,11 +74,10 @@ class OutlineNucleicAcidPartItem(CNOutlinerItem, AbstractPartItem):
         m_o.oligoRemovedSignal.connect(self.partOligoRemovedSlot)
         o_i = OutlineOligoItem(m_o, self._root_items['OligoList'])
         self._oligo_item_hash[m_o] = o_i
-        self.log('Added oligo %s' % model_oligo)
     # end def
 
     def partOligoRemovedSlot(self, model_part, model_oligo):
-        self.log('Removed oligo %s' % model_oligo)
+        pass
 #        m_o = model_oligo
 #        o_i = self._oligo_item_hash[m_o]
 #        o_i.parent().removeChild(o_i)
@@ -88,7 +85,6 @@ class OutlineNucleicAcidPartItem(CNOutlinerItem, AbstractPartItem):
     # end def
 
     def partVirtualHelixAddedSlot(self, model_part, id_num, virtual_helix, neighbors):
-        self.log('%s added' % virtual_helix)
         tw = self.treeWidget()
         tw.is_child_adding += 1
         vh_i = OutlineVirtualHelixItem(virtual_helix, self._root_items['VHelixList'])
@@ -96,7 +92,6 @@ class OutlineNucleicAcidPartItem(CNOutlinerItem, AbstractPartItem):
         tw.is_child_adding -= 1
 
     def partVirtualHelixRemovingSlot(self, model_part, id_num, virtual_helix, neigbors):
-        self.log('%s removed' % virtual_helix)
         vh_i = self._virtual_helix_item_hash.get(id_num)
         # in case a OutlineVirtualHelixItem Object is cleaned up before this happends
         if vh_i is not None:
@@ -127,7 +122,6 @@ class OutlineNucleicAcidPartItem(CNOutlinerItem, AbstractPartItem):
     def partSelectedChangedSlot(self, model_part, is_selected):
         # print("part", is_selected)
         self.setSelected(is_selected)
-        self.log('%s is selected' % model_part) if is_selected else self.log('%s is deselected' % model_part)
     # end def
 
     def partVirtualHelixPropertyChangedSlot(self, sender, id_num, virtual_helix, keys, values):
@@ -138,7 +132,6 @@ class OutlineNucleicAcidPartItem(CNOutlinerItem, AbstractPartItem):
             for key, val in zip(keys, values):
                 if key in CNOutlinerItem.PROPERTIES:
                     vh_i.setValue(key, val)
-                    self.log('%s:  Changing %s to %s' % (vh_i, key, val))
     # end def
 
     def partVirtualHelicesSelectedSlot(self, sender, vh_set, is_adding):
@@ -175,7 +168,6 @@ class OutlineNucleicAcidPartItem(CNOutlinerItem, AbstractPartItem):
                     # print("-----slot deselect outlinerview", vh_set)
                     selection_model.select(qmodel_idx, flag)
         tw.selection_filter_disabled = False
-        self.log('Selected %s' % str(vh_set) if is_adding else 'Deselected %s' % str(vh_set))
     # end def
 
     def partActiveVirtualHelixChangedSlot(self, part, id_num):

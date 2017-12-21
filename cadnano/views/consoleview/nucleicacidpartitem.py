@@ -86,7 +86,7 @@ class ConsoleNucleicAcidPartItem(AbstractPartItem):
     # end def
 
     def partSelectedChangedSlot(self, model_part, is_selected):
-        self.log('%s selected' % model_part) if is_selected else self.log('%s is deselected' % model_part)
+        self.log('%s selected' % model_part) if is_selected else self.log('%s deselected' % model_part)
     # end def
 
     def partVirtualHelixPropertyChangedSlot(self, sender, id_num, virtual_helix, keys, values):
@@ -100,7 +100,7 @@ class ConsoleNucleicAcidPartItem(AbstractPartItem):
     # end def
 
     def partVirtualHelicesSelectedSlot(self, sender, vh_set, is_adding):
-        self.log('Selected %s' % str(vh_set) if is_adding else 'Deselected %s' % str(vh_set))
+        self.log('%s selected' % str(vh_set) if is_adding else '%s deselected' % str(vh_set))
     # end def
 
     def partActiveVirtualHelixChangedSlot(self, part, id_num):
