@@ -26,6 +26,8 @@ from PyQt5.QtWidgets import QApplication, qApp
 
 from cadnano import util
 from cadnano.proxies.proxyconfigure import proxyConfigure
+from cadnano.tests.testrecorder import TestRecorder
+
 
 proxyConfigure('PyQt')
 decodeFile = None
@@ -47,13 +49,14 @@ if platform.system() == 'Windows':
 
 
 class CadnanoQt(QObject):
-    dontAskAndJustDiscardUnsavedChanges = False
+    discard_unsaved_changes_without_asking = False
     documentWasCreatedSignal = pyqtSignal(object)  # doc
     documentWindowWasCreatedSignal = pyqtSignal(object, object)  # doc, window
 
     def __init__(self, argv):
         """ Create the application object
         """
+        self.test_recorder = TestRecorder()
         self.argns, unused = util.parse_args(argv, gui=True)
         # util.init_logging(self.argns.__dict__)
         # logger.info("CadnanoQt initializing...")
@@ -97,11 +100,12 @@ class CadnanoQt(QObject):
 
         styles.setFontMetrics()
 
-        doc = Document()
+        print('yo', self.test_recorder)
+        doc = Document(test_recorder=self.test_recorder)
         self._document = self.createDocument(base_doc=doc)
 
         if os.environ.get('CADNANO_DISCARD_UNSAVED', False) and not self.ignoreEnv():
-            self.dontAskAndJustDiscardUnsavedChanges = True
+            self.discard_unsaved_changes_without_asking = True
         util.loadAllPlugins()
 
         if self.argns.interactive:
@@ -181,17 +185,16 @@ class CadnanoQt(QObject):
         if default_file is not None and base_doc is not None:
             default_file = os.path.expanduser(default_file)
             default_file = os.path.expandvars(default_file)
-            dc = DocumentController(base_doc)
+            dc = DocumentController(base_doc, test_recorder=self.test_recorder)
             # logger.info("Loading cadnano file %s to base document %s", default_file, base_doc)
             decodeFile(default_file, document=base_doc)
             dc.setFileName(default_file)
-            print("Loaded default document: %s" % (default_file))
         else:
             doc_ctrlr_count = len(self.document_controllers)
             # logger.info("Creating new empty document...")
             if doc_ctrlr_count == 0:  # first dc
                 # dc adds itself to app.document_controllers
-                dc = DocumentController(base_doc)
+                dc = DocumentController(base_doc, test_recorder=self.test_recorder)
             elif doc_ctrlr_count == 1:  # dc already exists
                 dc = list(self.document_controllers)[0]
                 dc.newDocument()  # tell it to make a new doucment

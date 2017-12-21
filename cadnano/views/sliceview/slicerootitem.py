@@ -39,7 +39,8 @@ class SliceRootItem(QGraphicsRectItem):
         self.instance_items = {}
         self.manager = None
         self.select_tool = None
-        self.test_recorder = None
+        self.test_recorder = window.test_recorder
+        print(window.test_recorder)
     ### SIGNALS ###
 
     ### SLOTS ###

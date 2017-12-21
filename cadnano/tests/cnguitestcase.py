@@ -16,7 +16,7 @@ class GUITestApp(CNTestApp):
         self.window = self.document.controller().win
 
         # Include this or the automatic build will hang
-        self.app.dontAskAndJustDiscardUnsavedChanges = True
+        self.app.discard_unsaved_changes_without_asking = True
 
         # By setting the widget to the main window we can traverse and
         # interact with any part of it. Also, tearDown will close

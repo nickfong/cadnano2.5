@@ -9,7 +9,6 @@ from PyQt5.QtWidgets import QAction, QApplication, QWidget
 
 from cadnano import app
 from cadnano.gui.mainwindow import ui_mainwindow
-from cadnano.views.consoleview.consolerootwidget import ConsoleRootWidget
 from cadnano.views.gridview.gridrootitem import GridRootItem
 from cadnano.views.gridview.tools.gridtoolmanager import GridToolManager
 from cadnano.views.pathview.colorpanel import ColorPanel
@@ -19,12 +18,12 @@ from cadnano.views.simview.simrootitem import SimRootItem
 from cadnano.views.simview.tools.simtoolmanager import SimToolManager
 from cadnano.views.sliceview.slicerootitem import SliceRootItem
 from cadnano.views.sliceview.tools.slicetoolmanager import SliceToolManager
+from cadnano.tests.testrecorder import TestRecorder
 
 
 # from PyQt5.QtOpenGL import QGLWidget
 # # check out https://github.com/baoboa/pyqt5/tree/master/examples/opengl
 # # for an example of the QOpenGlWidget added in Qt 5.4
-from cadnano.tests.testrecorder import TestRecorder
 
 
 class DocumentWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
@@ -36,11 +35,14 @@ class DocumentWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
         controller (DocumentController):
     """
 
-    def __init__(self, parent=None, doc_ctrlr=None):
+    def __init__(self, parent=None, doc_ctrlr=None, test_recorder=None):
         super(DocumentWindow, self).__init__(parent)
 
+        assert isinstance(test_recorder, TestRecorder) or test_recorder is None
+        print(test_recorder)
+
         self.controller = doc_ctrlr
-        self.test_recorder = TestRecorder()
+        self.test_recorder = test_recorder
         doc = doc_ctrlr.document()
         self.setupUi(self)
         self.settings = QSettings()

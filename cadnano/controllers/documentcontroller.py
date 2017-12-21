@@ -31,13 +31,14 @@ class DocumentController(object):
 
     ### INIT METHODS ###
 
-    def __init__(self, document):
+    def __init__(self, document, test_recorder=None):
         """docstring for __init__"""
         # initialize variables
         self._document = document
         self._document.setController(self)
         self._file_open_path = None  # will be set in _readSettings
         self._has_no_associated_file = True
+        self.test_recorder = test_recorder
 
         self.win = None
         self.fileopendialog = None
@@ -70,7 +71,8 @@ class DocumentController(object):
     def _initWindow(self):
         """docstring for initWindow"""
         # print("new window", app().qApp.allWindows())
-        self.win = win = DocumentWindow(doc_ctrlr=self)
+        print(self.test_recorder)
+        self.win = win = DocumentWindow(doc_ctrlr=self, test_recorder=self.test_recorder)
         app().documentWindowWasCreatedSignal.emit(self._document, win)
         self._connectWindowSignalsToSelf()
         win.show()
@@ -978,7 +980,7 @@ class DocumentController(object):
             SAVE_DIALOG_OPTIONS['DISCARD'] or
             SAVE_DIALOG_OPTIONS['SAVE']
         """
-        if app().dontAskAndJustDiscardUnsavedChanges:
+        if app().discard_unsaved_changes_without_asking:
             return SAVE_DIALOG_OPTIONS['DISCARD']
         if not self.undoStack().isClean():    # document dirty?
             savebox = QMessageBox(QMessageBox.Warning, "Application",

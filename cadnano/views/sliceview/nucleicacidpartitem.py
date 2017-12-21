@@ -657,6 +657,8 @@ class SliceNucleicAcidPartItem(QAbstractPartItem):
         if isinstance(self.test_recorder, TestRecorder):
             #            print('passing event')
             self.test_recorder.sliceSceneEvent(event, self)
+        else:
+            print('huh')
 
         if event.type() == QEvent.GraphicsSceneHoverMove:
             self.hoverMoveEvent(event)
