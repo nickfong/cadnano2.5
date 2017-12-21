@@ -100,6 +100,7 @@ class OutlineNucleicAcidPartItem(CNOutlinerItem, AbstractPartItem):
         vh_i = self._virtual_helix_item_hash.get(id_num)
         # in case a OutlineVirtualHelixItem Object is cleaned up before this happends
         if vh_i is not None:
+            del self._virtual_helix_item_hash[id_num]
     # end def
 
     def partPropertyChangedSlot(self, model_part, property_key, new_value):
