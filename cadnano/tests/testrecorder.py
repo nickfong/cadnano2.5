@@ -1,8 +1,11 @@
-from PyQt5.QtCore import QEvent, Qt
+from PyQt5.QtCore import QEvent, QPoint, Qt
 
+
+SLICE_VIEW = 'SliceView'
 
 class TestRecorder():
     def __init__(self):
+        self.corpus = ''
         pass
 
     def __repr__(self):
@@ -16,9 +19,10 @@ class TestRecorder():
     def sliceSceneEvent(self, event, sender):
         # TODO:  Handle scrolling/zooming
         if event.type() == QEvent.GraphicsSceneHoverMove:
-            coordiantes = self._getScenePosCoordinates(event)
+            point = QPoint(*self._getScenePosCoordinates(event))
         elif event.type() == QEvent.GraphicsSceneMousePress:
-            coordiantes = self._getScenePosCoordinates(event)
+            point = QPoint(*self._getScenePosCoordinates(event))
+            self.cgenMousePress(SLICE_VIEW, point)
         elif event.type() == QEvent.KeyPress:
             if event.key() == Qt.Key_Shift:
                 pass
@@ -56,3 +60,6 @@ class TestRecorder():
 
     def _getScenePosCoordinates(self, event):
         return event.scenePos().x(), event.scenePos().y()
+
+    def cgenMousePress(self, view, point):
+        self.corpus += 'self.mousePress(%s, position=%s)' % (view, point)

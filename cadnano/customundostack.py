@@ -25,13 +25,13 @@ class CustomUndoStack(QUndoStack):
         print('pushed')
         return super().push(QUndoCommand)
 
-    def createRedoAction(self, QObject, prefix=''):
-        print('created')
-        return super().createRedoAction(QObject, prefix)
-
-    def createUndoAction(self, QObject, prefix=''):
-        print('created2')
-        return super().createUndoAction(QObject, prefix)
+#    def createRedoAction(self, QObject, prefix=''):
+#        print('created')
+#        return super().createRedoAction(QObject, prefix)
+#
+#    def createUndoAction(self, QObject, prefix=''):
+#        print('created2')
+#        return super().createUndoAction(QObject, prefix)
 
     def index(self):
         print('index')
@@ -48,3 +48,31 @@ class CustomUndoStack(QUndoStack):
     def endMacro(self):
         print('end')
         return super().endMacro()
+
+    def command(self, index):
+        print('command')
+        return super().command(index)
+
+    def setIndex(self, p_int):
+        print('setting index')
+        return super().setIndex(p_int)
+
+    def canRedoChanged (canRedo):
+        print('crc')
+        return super().canRedoChanged(canRedo)
+
+    def canUndoChanged (canUndo):
+        print('cuc')
+        return super().canUndoChanged(canUndo)
+
+    def cleanChanged (clean):
+        print('cleanChanged')
+        return super().cleanChanged(clean)
+
+    def redoTextChanged (redoText):
+        print('redoTextChanged')
+        return super().redoTextChanged(redoText)
+
+    def undoTextChanged (undoText):
+        print('undoTextChanged')
+        return super().undoTextChanged(undoText)

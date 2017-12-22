@@ -9,11 +9,13 @@ class UndoCommand(object):
     # end def
 
     def redo(self):
+        print('redoing***')
         for cmd in self.commands:
             cmd.redo()
     # end def
 
     def undo(self):
+        print('undoing***')
         for cmd in self.commands:
             cmd.undo()
     # end def

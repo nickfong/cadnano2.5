@@ -12,6 +12,7 @@ class CreateVirtualHelixCommand(UndoCommand):
             safe (bool): safe must be True to update neighbors
             otherwise, neighbors need to be explicitly updated
         """
+        print(type(UndoCommand))
         super(CreateVirtualHelixCommand, self).__init__("create virtual helix")
         self.part = part
         if id_num is None:
@@ -69,6 +70,8 @@ class CreateVirtualHelixCommand(UndoCommand):
     # end def
 
     def undo(self):
+        import traceback
+        traceback.print_stack()
         part = self.part
         id_num = self.id_num
         # since we're hashing on the object in the views do this first

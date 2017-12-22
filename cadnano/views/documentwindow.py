@@ -288,10 +288,18 @@ class DocumentWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
         """
         self.actionUndo = self.controller.undoStack().createUndoAction(self)
         self.actionRedo = self.controller.undoStack().createRedoAction(self)
+        print('undo stack is %s' % self.controller.undoStack())
         self.actionUndo.setText(QApplication.translate("MainWindow", "Undo", None))
         self.actionUndo.setShortcut(QApplication.translate("MainWindow", "Ctrl+Z", None))
         self.actionRedo.setText(QApplication.translate("MainWindow", "Redo", None))
         self.actionRedo.setShortcut(QApplication.translate("MainWindow", "Ctrl+Shift+Z", None))
+
+#        print(self.actionUndo)
+#        self.actionUndoSaved = self.actionUndo
+#        self.actionUndo = self.customUndo
+#        print(self.actionUndo)
+
+
         self.sep = QAction(self)
         self.sep.setSeparator(True)
         self.menu_edit.insertAction(self.sep, self.actionRedo)
@@ -299,6 +307,10 @@ class DocumentWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
         # self.main_splitter.setSizes([400, 400, 180])  # balance main_splitter size
         self.statusBar().showMessage("")
     # end def
+
+    def customUndo(self, *kwargs):
+        print('customUndo')
+        return self.actionUndoSaved(*kwargs)
 
     def _finishInit(self):
         """
