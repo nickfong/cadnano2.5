@@ -72,7 +72,6 @@ class ConsoleNucleicAcidPartItem(AbstractPartItem):
     # end def
 
     def partVirtualHelixRemovingSlot(self, model_part, id_num, virtual_helix, neigbors):
-        # print(type(virtual_helix))
         self.log('%s removed' % virtual_helix)
 
         if self._virtual_helix_item_hash.get(id_num) is not None:

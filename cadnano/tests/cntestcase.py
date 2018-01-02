@@ -22,6 +22,30 @@ class CNTestApp(object):
         # Document import must be here so as to allow for GUI tests to be run
         from cadnano.document import Document
         self.document = Document()
+#        assert self.document.controller() is not None
+#        from cadnano.controllers.documentcontroller import DocumentController
+        """
+        Adding this import by itself triggers:
+        ❱ pytest cadnano/tests
+
+        ================================================================================== test session starts ==================================================================================
+        platform darwin -- Python 3.6.3, pytest-3.3.1, py-1.5.2, pluggy-0.6.0
+        PyQt5 5.9.2 -- Qt runtime 5.9.3 -- Qt compiled 5.9.3
+        rootdir: cadnano2.5/cadnano/tests, inifile: pytest.ini
+        plugins: qt-2.3.0
+        collected 13 items
+
+        cadnano/tests/functionaltest.py Abort trap: 6
+
+        This is due to this error, as shown in an interactive Python session:
+        >>> from cadnano.document import Document
+        >>> doc = Document()
+        >>> from cadnano.controllers.documentcontroller import DocumentController
+        QPixmap: Must construct a QGuiApplication before a QPixmap
+        Abort trap: 6
+        """
+#        self.document_controller = DocumentController(self.document)
+#        self.document_controller.newDocument()
 
     def tearDown(self):
         pass

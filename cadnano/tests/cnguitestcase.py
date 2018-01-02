@@ -4,8 +4,8 @@ from PyQt5.QtCore import Qt, QEvent, QPoint, QPointF, QTimer
 from PyQt5.QtGui import QMouseEvent, QKeyEvent
 from PyQt5.QtTest import QTest
 
+from cntestcase import CNTestApp
 from cadnano import initAppWithGui
-from cadnano.tests.cntestcase import CNTestApp
 
 
 class GUITestApp(CNTestApp):
@@ -52,12 +52,16 @@ class GUITestApp(CNTestApp):
             button (Qt.MouseButton):
             pos (QPoint): in item coordinates
         """
+        assert graphics_item.scene() is not None
+
         gview = graphics_item.scene().views()[0]
         if pos is None:
             pos = GUITestApp.getItemCenterScenePos(graphics_item)
         else:
             pos = graphics_item.mapToScene(pos)
+#        print(pos)
         pos = gview.mapFromScene(pos)
+#        print(pos)
         if modifier is None:
             modifier = Qt.KeyboardModifiers()
         QTest.mouseClick(gview.viewport(), button,

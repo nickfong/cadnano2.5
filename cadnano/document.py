@@ -8,7 +8,7 @@ from cadnano import app, setBatch, util
 from cadnano.addinstancecmd import AddInstanceCommand
 from cadnano.proxies.cnenum import ModType, GridType
 from cadnano.proxies.cnobject import CNObject
-from cadnano.proxies.cnproxy import ProxySignal
+from cadnano.proxies.cnproxy import ProxySignal, UndoStack
 from cadnano.docmodscmd import (AddModCommand, ModifyModCommand,
                                 RemoveModCommand)
 from cadnano.fileio.nnodecode import decodeFile
@@ -18,7 +18,6 @@ from cadnano.part.nucleicacidpart import NucleicAcidPart
 from cadnano.part.refreshsegmentscmd import RefreshSegmentsCommand
 from cadnano.strand import Strand
 from cadnano.tests.testrecorder import TestRecorder
-from cadnano.customundostack import CustomUndoStack
 
 
 class Document(CNObject):
@@ -42,8 +41,7 @@ class Document(CNObject):
 
         self._test_recorder = test_recorder
 #        self._undostack = us = UndoStack()  # notice NO parent, what does this mean?
-        print(self._test_recorder)
-        self._undostack = us = CustomUndoStack(test_recorder=self._test_recorder)  # notice NO parent, what does this mean?
+        self._undostack = us = UndoStack()  # notice NO parent, what does this mean?
         us.setUndoLimit(30)
         self._children = set()     # for storing a reference to Parts (and Assemblies)
         self._instances = set()    # for storing instances of Parts (and Assemblies)

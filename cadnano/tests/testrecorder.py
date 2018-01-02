@@ -16,6 +16,7 @@ class TestRecorder():
         _name = self.__class__.__name__
         return '%s_%s_%s' % (_name, -1, _id)
 
+    # Events
     def sliceSceneEvent(self, event, sender):
         # TODO:  Handle scrolling/zooming
         if event.type() == QEvent.GraphicsSceneHoverMove:
@@ -38,7 +39,8 @@ class TestRecorder():
             else:
                 print('Received unhandled keypress %s' % event.key())
         else:
-            print('Received unhandled event type %s' % event.type())
+            pass
+#            print('Received unhandled event type %s' % event.type())
 
     def gridSceneEvent(self, event, sender):
         print('Received a grid scene event')
@@ -58,8 +60,16 @@ class TestRecorder():
     def redoEvent(self):
         print('Received a redo event')
 
+    # Event Helpers
     def _getScenePosCoordinates(self, event):
-        return event.scenePos().x(), event.scenePos().y()
+        return event.pos().x(), event.pos().y()
 
+    # Code generation
     def cgenMousePress(self, view, point):
         self.corpus += 'self.mousePress(%s, position=%s)' % (view, point)
+
+    def cgenMouseRelease(self, view, point):
+        self.corpus += 'self.mouseRelease(%s, position=%s)' % (view, point)
+
+    def cgenMouseMove(self):
+        raise NotImplementedError

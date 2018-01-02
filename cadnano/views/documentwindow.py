@@ -37,10 +37,7 @@ class DocumentWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
 
     def __init__(self, parent=None, doc_ctrlr=None, test_recorder=None):
         super(DocumentWindow, self).__init__(parent)
-
         assert isinstance(test_recorder, TestRecorder) or test_recorder is None
-        print(test_recorder)
-
         self.controller = doc_ctrlr
         self.test_recorder = test_recorder
         doc = doc_ctrlr.document()
@@ -279,6 +276,19 @@ class DocumentWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
         self.slice_graphics_view.setName("SliceView")
         self.slice_graphics_view.setScaleFitFactor(0.9)
         self.slice_tool_manager = SliceToolManager(self, self.slice_root)
+#        print('****', isinstance(self.slice_scene, QWidget))
+#        print('****', isinstance(self.slice_root, QWidget))
+#        print('****', isinstance(self.slice_graphics_view, QWidget))
+#        print(self.slice_graphics_view)
+
+        from PyQt5.QtTest import QTest
+        from PyQt5.QtCore import QPoint
+        pos = QPoint(177, 103)
+#        from cadnano.util import qtdb_trace
+#        qtdb_trace()
+        print('Starting mouseClick')
+        QTest.mouseClick(self.slice_graphics_view, Qt.LeftButton, pos=pos, delay=100)
+        print('Finished mouseClick.  Did CustomQGraphicsItem receive a MousePressEvent?')
     # end def
 
     def _initEditMenu(self):
@@ -288,17 +298,13 @@ class DocumentWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
         """
         self.actionUndo = self.controller.undoStack().createUndoAction(self)
         self.actionRedo = self.controller.undoStack().createRedoAction(self)
-        print('undo stack is %s' % self.controller.undoStack())
         self.actionUndo.setText(QApplication.translate("MainWindow", "Undo", None))
         self.actionUndo.setShortcut(QApplication.translate("MainWindow", "Ctrl+Z", None))
         self.actionRedo.setText(QApplication.translate("MainWindow", "Redo", None))
         self.actionRedo.setShortcut(QApplication.translate("MainWindow", "Ctrl+Shift+Z", None))
-
-#        print(self.actionUndo)
-#        self.actionUndoSaved = self.actionUndo
-#        self.actionUndo = self.customUndo
-#        print(self.actionUndo)
-
+        if self.test_recorder:
+            self.actionUndo.triggered.connect(self.test_recorder.undoEvent)
+            self.actionRedo.triggered.connect(self.test_recorder.redoEvent)
 
         self.sep = QAction(self)
         self.sep.setSeparator(True)
@@ -307,10 +313,6 @@ class DocumentWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
         # self.main_splitter.setSizes([400, 400, 180])  # balance main_splitter size
         self.statusBar().showMessage("")
     # end def
-
-    def customUndo(self, *kwargs):
-        print('customUndo')
-        return self.actionUndoSaved(*kwargs)
 
     def _finishInit(self):
         """

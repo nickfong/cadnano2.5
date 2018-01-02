@@ -71,7 +71,6 @@ class DocumentController(object):
     def _initWindow(self):
         """docstring for initWindow"""
         # print("new window", app().qApp.allWindows())
-        print(self.test_recorder)
         self.win = win = DocumentWindow(doc_ctrlr=self, test_recorder=self.test_recorder)
         app().documentWindowWasCreatedSignal.emit(self._document, win)
         self._connectWindowSignalsToSelf()

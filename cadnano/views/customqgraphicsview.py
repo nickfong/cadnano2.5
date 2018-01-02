@@ -110,9 +110,9 @@ class CustomQGraphicsView(QGraphicsView):
     levelOfDetailChangedSignal = pyqtSignal(bool)
 
     def __repr__(self):
-        clsName = self.__class__.__name__
-        objId = self._name if self._name else str(id(self))[-4:]
-        return "<%s %s>" % (clsName, objId)
+        _id = str(id(self))[-4:]
+        _name  = self.__class__.__name__
+        return '%s_%s_%s' % (_name, -1, _id)
 
     def setName(self, name):
         self._name = name
@@ -386,6 +386,8 @@ class CustomQGraphicsView(QGraphicsView):
 
     def mousePressEvent(self, event):
         """docstring for mousePressEvent"""
+        print('CustomQGraphicsView %s encountered a MousePressEvent' % self)
+        print('The mousePressEvent is located at:  %s,%s' % (event.pos().x(), event.pos().y()))
         if self._transform_enable and qApp.keyboardModifiers():
             which_buttons = event.buttons()
             if which_buttons in [self._button_pan, self._button_pan_alt]:

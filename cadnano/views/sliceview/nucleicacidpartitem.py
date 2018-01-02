@@ -127,6 +127,13 @@ class SliceNucleicAcidPartItem(QAbstractPartItem):
             else:
                 part.setSelected(False)
         self.show()
+
+        from PyQt5.QtTest import QTest
+        from PyQt5.QtCore import QPoint
+        pos = QPoint(177, 103)
+#        from cadnano.util import qtdb_trace
+#        qtdb_trace()
+        QTest.mouseClick(self.window(), Qt.LeftButton, pos=pos, delay=100)
     # end def
 
     ### SIGNALS ###
@@ -657,8 +664,6 @@ class SliceNucleicAcidPartItem(QAbstractPartItem):
         if isinstance(self.test_recorder, TestRecorder):
             #            print('passing event')
             self.test_recorder.sliceSceneEvent(event, self)
-        else:
-            print('huh')
 
         if event.type() == QEvent.GraphicsSceneHoverMove:
             self.hoverMoveEvent(event)
@@ -669,7 +674,7 @@ class SliceNucleicAcidPartItem(QAbstractPartItem):
         elif event.type() == QEvent.GraphicsSceneMousePress:
             self.mousePressEvent(event)
         else:
-            print(event.type())
+#            print(event.type())
             return False
         return True
     # end def
@@ -771,6 +776,10 @@ class SliceNucleicAcidPartItem(QAbstractPartItem):
             alt_event (None, optional): Description
         """
         # Abort if a VH already exists here
+#        print('creating %s' % type(event))
+#        print(tool)
+#        print(type(tool))
+#        print(alt_event)
         position = self.translateEventCoordinates(event)
 
         # 1. get point in model coordinates:

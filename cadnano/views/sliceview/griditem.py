@@ -1,4 +1,5 @@
 from PyQt5.QtCore import QPointF, Qt, QEvent
+from PyQt5.QtCore import QPointF, Qt, QEvent, QPoint
 from PyQt5.QtGui import QColor, QFont, QPainterPath
 from PyQt5.QtWidgets import QGraphicsItem
 from PyQt5.QtWidgets import QGraphicsEllipseItem, QGraphicsPathItem, QGraphicsRectItem, QGraphicsSimpleTextItem
@@ -166,6 +167,8 @@ class GridItem(QGraphicsRectItem):
                         ]
                     self.previous_grid_bounds = (row_l, col_l, row_h, col_h)
 
+                current_point = QPoint(x, -y)
+
             is_pen_down = False
 
         if draw_lines:
@@ -186,6 +189,20 @@ class GridItem(QGraphicsRectItem):
             self.part_item.setNeighborMap(neighbor_map=neighbor_map)
             self.part_item.setPointMap(point_map=point_coordinates)
     # end def
+
+        from PyQt5.QtTest import QTest
+#        QTest.mouseClick(self.part_item.window(), Qt.LeftButton, delay=100)
+#        print(self.part_item.window())
+        QTest.mouseClick(self.part_item.window(), Qt.LeftButton, pos=current_point, delay=100)
+        QTest.mouseClick(self.part_item.window().slice_graphics_view, Qt.LeftButton, pos=current_point, delay=100)
+        QTest.mouseClick(self.part_item.window().slice_graphics_view, Qt.LeftButton, delay=100)
+#        print(self.part_item.window().slice_graphics_view)
+        pos = QPoint(177, 103)
+        sgv = self.part_item.window().slice_graphics_view
+#        from cadnano.util import qtdb_trace
+#        qtdb_trace()
+        QTest.mouseClick(sgv, Qt.LeftButton, pos=pos , delay=100)
+#        print('done')
 
     def createSquareGrid(self, part_item, radius, bounds):
         """Instantiate an area of griditems arranged on a square lattice.
@@ -588,12 +605,18 @@ class GridPoint(QGraphicsEllipseItem):
         alt_event = GridEvent(self, self.offset)
         part_item.setLastHoveredItem(self)
         part_item.createToolMousePress(tool, event, alt_event)
+#        print(event.pos().x(), event.pos().y())
+#        print(event.scenePos().x(), event.scenePos().y())
+#        print(event.screenPos().x(), event.screenPos().y())
     # end def
 
     def createToolHoverEnterEvent(self, tool, part_item, event):
         self.setPen(getPenObj(styles.BLUE_STROKE, 2))
         part_item.setLastHoveredItem(self)
     # end def
+
+#        from cadnano.tests.cnguitestcase import GUITestApp
+#        GUITestApp.graphicsItemClick(self, Qt.LeftButton)
 
     def createToolHoverMoveEvent(self, tool, part_item, event):
         part_item.createToolHoverMove(tool, event)

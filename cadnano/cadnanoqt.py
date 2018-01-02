@@ -100,7 +100,6 @@ class CadnanoQt(QObject):
 
         styles.setFontMetrics()
 
-        print('yo', self.test_recorder)
         doc = Document(test_recorder=self.test_recorder)
         self._document = self.createDocument(base_doc=doc)
 
