@@ -40,7 +40,6 @@ class Document(CNObject):
         assert isinstance(test_recorder, TestRecorder) or test_recorder is None
 
         self._test_recorder = test_recorder
-#        self._undostack = us = UndoStack()  # notice NO parent, what does this mean?
         self._undostack = us = UndoStack()  # notice NO parent, what does this mean?
         us.setUndoLimit(30)
         self._children = set()     # for storing a reference to Parts (and Assemblies)

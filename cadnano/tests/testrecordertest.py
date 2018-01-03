@@ -1,18 +1,18 @@
-from PyQt5 import Qt
+from PyQt5.QtCore import Qt
 import pytest
 
-from cntestcase import CNTestApp
+from cnguitestcase import GUITestApp
 
 
 @pytest.fixture()
 def cnapp():
-    app = CNTestApp()
+    app = GUITestApp()
     yield app
     app.tearDown()
 
 def testTestRecorderUnderstanding(cnapp):
-    doc = cnapp.document
-    document_controller = doc.controller()
+    document = cnapp.document
+    document_controller = document.controller()
 
 #    part = doc.activePart()
 

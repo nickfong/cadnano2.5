@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 from collections import deque
 
+from PyQt5.QtWidgets import QUndoStack
+
 from cadnano.undocommand import UndoCommand
 
 
-class UndoStack(object):
+class UndoStack(QUndoStack):
     def __init__(self, limit=10):
+        super().__init__()
         self.undostack = deque()    # not using deque maxlen because pattern is awkward
         self.redostack = []
         self.limit = limit
