@@ -844,34 +844,33 @@ class SliceNucleicAcidPartItem(QAbstractPartItem):
     # end def
 
     def keyPressEvent(self, event):
+        is_alt = bool(event.modifiers() & Qt.AltModifier)
         if event.key() == Qt.Key_Escape:
             self._setShortestPathStart(None)
             self.removeAllCreateHints()
             if self._inPointItem(self.last_mouse_position, self.getLastHoveredCoordinates()):
                 self.highlightOneGridPoint(self.getLastHoveredCoordinates())
-        elif event.key() == Qt.Key_Shift and self.shortest_path_add_mode is True:
+        elif is_alt and self.shortest_path_add_mode is True:
             if self._inPointItem(self.last_mouse_position, self.getLastHoveredCoordinates()):
                 x, y = self.coordinates_to_xy.get(self.getLastHoveredCoordinates())
                 self._preview_spa((x, y))
+        elif is_alt:
+            if self._inPointItem(self.last_mouse_position, self.getLastHoveredCoordinates()):
+                self.highlightOneGridPoint(self.getLastHoveredCoordinates(), styles.GRAY_STROKE)
 
         if isinstance(self.test_recorder, TestRecorder):
             self.test_recorder.sliceSceneEvent(event, self)
-#            print('press yep %s' % type(self.test_recorder))
-#        else:
-#            print('press nope %s' % type(self.test_recorder))
     # end def
 
     def keyReleaseEvent(self, event):
-        if event.key() == Qt.Key_Shift and self.shortest_path_add_mode is True:
+        is_alt = bool(event.modifiers() & Qt.AltModifier)
+        if not is_alt:
             self.removeAllCreateHints()
             if self._inPointItem(self.last_mouse_position, self.getLastHoveredCoordinates()):
                 self.highlightOneGridPoint(self.getLastHoveredCoordinates())
 
         if isinstance(self.test_recorder, TestRecorder):
             self.test_recorder.sliceSceneEvent(event, self)
-#            print('release yep %s' % type(self.test_recorder))
-#        else:
-#            print('release nope %s' % type(self.test_recorder))
     # end def
 
     def createToolHoverLeave(self, tool, event):
@@ -1026,7 +1025,11 @@ class SliceNucleicAcidPartItem(QAbstractPartItem):
             point_item = self.coordinates_to_xy.get(event_coord)
 
             if point_item is not None and self._inPointItem(event_xy, event_coord) and is_alt:
+<<<<<<< HEAD
                 self.highlightOneGridPoint(self.getLastHoveredCoordinates(), styles.SPA_START_HINT_COLOR)
+=======
+                self.highlightOneGridPoint(self.getLastHoveredCoordinates(), styles.GRAY_STROKE)
+>>>>>>> 2.5:  Reimplement hinting on SPA modifier keypress
             elif point_item is not None and self._inPointItem(event_xy, event_coord) and not is_alt:
                 part = self._model_part
                 next_idnums = (part._getNewIdNum(0), part._getNewIdNum(1))
