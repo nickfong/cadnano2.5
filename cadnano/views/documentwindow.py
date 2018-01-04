@@ -70,6 +70,10 @@ class DocumentWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
         self.inspector_dock_widget.setTitleBarWidget(QWidget())
 
         self._restoreGeometryandState()
+
+        if self.test_recorder:
+            self._initTestRecorder()
+
         self._finishInit()
 
         doc.setViewNames(['slice', 'path', 'sim', 'console', 'inspector'])
@@ -276,19 +280,6 @@ class DocumentWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
         self.slice_graphics_view.setName("SliceView")
         self.slice_graphics_view.setScaleFitFactor(0.9)
         self.slice_tool_manager = SliceToolManager(self, self.slice_root)
-#        print('****', isinstance(self.slice_scene, QWidget))
-#        print('****', isinstance(self.slice_root, QWidget))
-#        print('****', isinstance(self.slice_graphics_view, QWidget))
-#        print(self.slice_graphics_view)
-
-        from PyQt5.QtTest import QTest
-        from PyQt5.QtCore import QPoint
-        pos = QPoint(177, 103)
-#        from cadnano.util import qtdb_trace
-#        qtdb_trace()
-        print('Starting mouseClick')
-        QTest.mouseClick(self.slice_graphics_view, Qt.LeftButton, pos=pos, delay=100)
-        print('Finished mouseClick.  Did CustomQGraphicsItem receive a MousePressEvent?')
     # end def
 
     def _initEditMenu(self):
@@ -303,9 +294,6 @@ class DocumentWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
         self.actionUndo.setShortcut(QApplication.translate("MainWindow", "Ctrl+Z", None))
         self.actionRedo.setText(QApplication.translate("MainWindow", "Redo", None))
         self.actionRedo.setShortcut(QApplication.translate("MainWindow", "Ctrl+Shift+Z", None))
-        if self.test_recorder:
-            self.actionUndo.triggered.connect(self.test_recorder.undoEvent)
-            self.actionRedo.triggered.connect(self.test_recorder.redoEvent)
 
         self.sep = QAction(self)
         self.sep.setSeparator(True)
@@ -313,6 +301,39 @@ class DocumentWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
         self.menu_edit.insertAction(self.actionRedo, self.actionUndo)
         # self.main_splitter.setSizes([400, 400, 180])  # balance main_splitter size
         self.statusBar().showMessage("")
+    # end def
+
+    def _initTestRecorder(self):
+        # Undo and Redo
+        self.actionUndo.triggered.connect(self.test_recorder.undoEvent)
+        self.actionRedo.triggered.connect(self.test_recorder.redoEvent)
+
+        # Tools
+        self.action_global_select.triggered.connect(self.test_recorder.switchSelectTool)
+        self.action_global_create.triggered.connect(self.test_recorder.switchCreateTool)
+        self.action_path_break.triggered.connect(self.test_recorder.switchBreakTool)
+        self.action_path_paint.triggered.connect(self.test_recorder.switchPaintTool)
+        self.action_path_insertion.triggered.connect(self.test_recorder.switchInsertTool)
+        self.action_path_skip.triggered.connect(self.test_recorder.switchSkipTool)
+        self.action_path_add_seq.triggered.connect(self.test_recorder.switchSeqTool)
+
+        # Create Buttons
+        self.action_new_dnapart_honeycomb.triggered.connect(self.test_recorder.newHoneycombEvent)
+        self.action_new_dnapart_square.triggered.connect(self.test_recorder.newSquareEvent)
+
+        # Export
+        self.action_export_staples.triggered.connect(self.test_recorder.actionExportStaples)
+        self.action_SVG.triggered.connect(self.test_recorder.actionSVG)
+
+        # Filters
+        self.action_filter_helix.triggered.connect(self.test_recorder.actionFilterHelix)
+        self.action_filter_endpoint.triggered.connect(self.test_recorder.actionFilterEndpoint)
+        self.action_filter_xover.triggered.connect(self.test_recorder.actionFilterXover)
+
+        self.action_filter_scaf.triggered.connect(self.test_recorder.actionFilterScaf)
+        self.action_filter_stap.triggered.connect(self.test_recorder.actionFilterStap)
+        self.action_filter_fwd.triggered.connect(self.test_recorder.actionFilterFwd)
+        self.action_filter_rev.triggered.connect(self.test_recorder.actionFilterRev)
     # end def
 
     def _finishInit(self):

@@ -24,7 +24,7 @@ class SimToolManager(AbstractToolManager):
         self.tool_names = ('Select', 'Paint')
         self.select_tool = SelectTool(self, viewroot)
         # self.pencil_tool = PencilTool(self)
-        # self.nick_tool = BreakTool(self)
+        # self.break_tool = BreakTool(self)
         # self.insertion_tool = InsertionTool(self)
         # self.skip_tool = SkipTool(self)
         self.paint_tool = PaintTool(self)  # (self, win.path_graphics_view.toolbar)

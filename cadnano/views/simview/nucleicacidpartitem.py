@@ -201,12 +201,13 @@ class SimNucleicAcidPartItem(AbstractPartItem, QEntity):
             TYPE: Description
         """
         # print("partSelectedChangedSlot", is_selected)
-        if is_selected:
-            self.resetPen(styles.SELECTED_COLOR, styles.SELECTED_PEN_WIDTH)
-            self.resetBrush(styles.SELECTED_BRUSH_COLOR, styles.SELECTED_ALPHA)
-        else:
-            self.resetPen(self.modelColor())
-            self.resetBrush(styles.DEFAULT_BRUSH_COLOR, styles.DEFAULT_ALPHA)
+        return
+#        if is_selected:
+#            self.resetPen(styles.SELECTED_COLOR, styles.SELECTED_PEN_WIDTH)
+#            self.resetBrush(styles.SELECTED_BRUSH_COLOR, styles.SELECTED_ALPHA)
+#        else:
+#            self.resetPen(self.modelColor())
+#            self.resetBrush(styles.DEFAULT_BRUSH_COLOR, styles.DEFAULT_ALPHA)
 
     def partPropertyChangedSlot(self, model_part, property_key, new_value):
         """Summary

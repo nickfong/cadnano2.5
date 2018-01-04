@@ -1,12 +1,11 @@
 from PyQt5.QtCore import QEvent, QPoint, Qt
 
 
-SLICE_VIEW = 'SliceView'
+SLICE_VIEW = 'document_window.slice_graphics_view'
 
 class TestRecorder():
     def __init__(self):
-        self.corpus = ''
-        pass
+        self.corpus = []
 
     def __repr__(self):
         pass
@@ -23,7 +22,7 @@ class TestRecorder():
             point = QPoint(*self._getScenePosCoordinates(event))
         elif event.type() == QEvent.GraphicsSceneMousePress:
             point = QPoint(*self._getScenePosCoordinates(event))
-            self.cgenMousePress(SLICE_VIEW, point)
+            self.cgenMouseClick(SLICE_VIEW, point)
         elif event.type() == QEvent.KeyPress:
             if event.key() == Qt.Key_Shift:
                 pass
@@ -60,16 +59,70 @@ class TestRecorder():
     def redoEvent(self):
         print('Received a redo event')
 
+    def newHoneycombEvent(self):
+        print('Received a new honeycomb event')
+
+    def newSquareEvent(self):
+        print('Received a new square event')
+
+    def switchSelectTool(self):
+        print('Switching to select tool')
+
+    def switchCreateTool(self):
+        print('Switching to create tool')
+
+    def switchBreakTool(self):
+        print('Switching to break tool')
+
+    def switchPaintTool(self):
+        print('Switching to paint tool')
+
+    def switchInsertTool(self):
+        print('Switching to insert tool')
+
+    def switchSkipTool(self):
+        print('Switching to skip tool')
+
+    def switchSeqTool(self):
+        print('Switching to seq tool')
+
+    def actionExportStaples(self):
+        print('Exporting staples')
+
+    def actionSVG(self):
+        print('Creating a SVG')
+
+    def actionFilterHelix(self):
+        print('Helix filter triggered')
+
+    def actionFilterEndpoint(self):
+        print('Endpoint filter triggered')
+
+    def actionFilterXover(self):
+        print('Xover filter triggered')
+
+    def actionFilterScaf(self):
+        print('Scaf filter triggered')
+
+    def actionFilterStap(self):
+        print('Stap filter triggered')
+
+    def actionFilterFwd(self):
+        print('Fwd filter triggered')
+
+    def actionFilterRev(self):
+        print('Rev filter triggered')
+
     # Event Helpers
     def _getScenePosCoordinates(self, event):
         return event.pos().x(), event.pos().y()
 
     # Code generation
-    def cgenMousePress(self, view, point):
-        self.corpus += 'self.mousePress(%s, position=%s)' % (view, point)
-
-    def cgenMouseRelease(self, view, point):
-        self.corpus += 'self.mouseRelease(%s, position=%s)' % (view, point)
+    def cgenMouseClick(self, view, button=None, pos=None, delay=None):
+        click_button = button if button else Qt.LeftButton
+        delay = delay if delay else 100
+        command = 'app.graphicsItemClick(%s, %s, pos=%s, delay=%s)' % (view, click_button, pos, delay)
+        self.corpus.append(command)
 
     def cgenMouseMove(self):
         raise NotImplementedError

@@ -44,15 +44,22 @@ class DummySignal(object):
         name = kwargs.get('name')
         if name is None:
             raise ValueError("missing name")
-        self.targets = set()
+        self.targets = []
         self.argtypes = args
         self.name = name
 
     def connect(self, target):
-        self.targets.add(target)
+        print(target)
+        self.targets.append(target)
+#        if target not in self.targets:
+#            self.targets.append(target)
+#        else:
+#            index = self.targets.index(target)
+#            self.targets[index] = target
 
     def disconnect(self, target):
-        self.targets.remove(target)
+        while target in self.targets:
+            self.targets.remove(target)
 
     def emit(self, *args):
         for t in self.targets:

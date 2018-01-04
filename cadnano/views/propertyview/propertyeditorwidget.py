@@ -42,6 +42,8 @@ class PropertyEditorWidget(QTreeWidget):
         self._cn_model_set = set()
         self._cn_model_list = []
         self.setAttribute(Qt.WA_MacShowFocusRect, 0)  # no mac focus halo
+
+        self.pe_items = []
     # end def
 
     def undoStack(self):
@@ -141,9 +143,12 @@ class PropertyEditorWidget(QTreeWidget):
         self._cn_model_set = set(cn_model_list)
         self._cn_model_list = cn_model_list
 
+        print('oisc*****************************************************')
         # special case for parts since there is currently no part filter
         if item_type is ItemType.NUCLEICACID:
-            pe_item = NucleicAcidPartSetItem(parent=self)
+            self.pe_item = NucleicAcidPartSetItem(parent=self)
+            print(item_type, self, self.pe_item, 'special case', self.parent())
+            self.pe_items.append(self.pe_item)
             self.show()
             return
 
@@ -152,10 +157,10 @@ class PropertyEditorWidget(QTreeWidget):
             print(item.FILTER_NAME, "not in self._document.filter_set")
             return
         if item_type is ItemType.OLIGO:
-            pe_item = OligoSetItem(parent=self)
+            self.pe_item = OligoSetItem(parent=self)
             self.show()
         elif item_type is ItemType.VIRTUALHELIX:
-            pe_item = VirtualHelixSetItem(parent=self)
+            self.pe_item = VirtualHelixSetItem(parent=self)
             self.show()
         else:
             raise NotImplementedError

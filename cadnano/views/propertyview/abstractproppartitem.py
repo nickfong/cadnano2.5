@@ -60,5 +60,6 @@ class AbstractPropertyPartSetItem(CNPropertyItem, AbstractPartItem):
         Returns:
             TYPE: Description
         """
+        print('self is %s' % self)
         self.setSelected(is_selected)
     # end def

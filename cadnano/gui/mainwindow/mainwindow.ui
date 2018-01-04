@@ -81,7 +81,7 @@
    </attribute>
    <addaction name="action_global_select"/>
    <addaction name="action_global_create"/>
-   <addaction name="action_path_nick"/>
+   <addaction name="action_path_break"/>
    <addaction name="action_path_paint"/>
    <addaction name="action_path_insertion"/>
    <addaction name="action_path_skip"/>
@@ -844,7 +844,7 @@
     <string>Click to add new part with square lattice</string>
    </property>
   </action>
-  <action name="action_path_nick">
+  <action name="action_path_break">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -853,10 +853,10 @@
    </property>
    <property name="icon">
     <iconset resource="cadnano.gui.mainwindow.icons.qrc">
-     <normaloff>:/pathtools/nick</normaloff>:/pathtools/nick</iconset>
+     <normaloff>:/pathtools/break</normaloff>:/pathtools/break</iconset>
    </property>
    <property name="text">
-    <string>Nick</string>
+    <string>Break</string>
    </property>
    <property name="iconText">
     <string>Break</string>
