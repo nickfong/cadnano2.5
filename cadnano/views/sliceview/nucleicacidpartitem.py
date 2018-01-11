@@ -1025,11 +1025,7 @@ class SliceNucleicAcidPartItem(QAbstractPartItem):
             point_item = self.coordinates_to_xy.get(event_coord)
 
             if point_item is not None and self._inPointItem(event_xy, event_coord) and is_alt:
-<<<<<<< HEAD
                 self.highlightOneGridPoint(self.getLastHoveredCoordinates(), styles.SPA_START_HINT_COLOR)
-=======
-                self.highlightOneGridPoint(self.getLastHoveredCoordinates(), styles.GRAY_STROKE)
->>>>>>> 2.5:  Reimplement hinting on SPA modifier keypress
             elif point_item is not None and self._inPointItem(event_xy, event_coord) and not is_alt:
                 part = self._model_part
                 next_idnums = (part._getNewIdNum(0), part._getNewIdNum(1))
