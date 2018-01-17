@@ -143,11 +143,11 @@ class PropertyEditorWidget(QTreeWidget):
         self._cn_model_set = set(cn_model_list)
         self._cn_model_list = cn_model_list
 
-        print('oisc*****************************************************')
+#        print('oisc*****************************************************')
         # special case for parts since there is currently no part filter
         if item_type is ItemType.NUCLEICACID:
             self.pe_item = NucleicAcidPartSetItem(parent=self)
-            print(item_type, self, self.pe_item, 'special case', self.parent())
+#            print(item_type, self, self.pe_item, 'special case', self.parent())
             self.pe_items.append(self.pe_item)
             self.show()
             return

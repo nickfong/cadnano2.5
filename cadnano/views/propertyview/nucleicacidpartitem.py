@@ -26,7 +26,7 @@ class NucleicAcidPartSetItem(AbstractPropertyPartSetItem):
                 self._controller_list.append(NucleicAcidPartItemController(self, model_part))
 
         if 'parent' in kwargs:
-            print('found parent %s, %s' % (kwargs['parent'], self))
+#            print('found parent %s, %s' % (kwargs['parent'], self))
             self.parent = kwargs['parent']
         else:
             print('didnt find parent')

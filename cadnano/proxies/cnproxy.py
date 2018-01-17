@@ -49,7 +49,7 @@ class DummySignal(object):
         self.name = name
 
     def connect(self, target):
-        print(target)
+#        print('cn proxy target is', target)
         self.targets.append(target)
 #        if target not in self.targets:
 #            self.targets.append(target)
