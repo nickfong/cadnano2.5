@@ -979,4 +979,8 @@ class Document(CNObject):
         """
         return self.activePart().setGridType(grid_type)
     # end def
+
+    def setGridOffsets(self, x_offset, y_offset):
+        if self.activePart() is not None:
+            return self.activePart().setGridOffsets(x_offset, y_offset)
 # end class

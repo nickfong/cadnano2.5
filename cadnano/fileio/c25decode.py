@@ -42,6 +42,7 @@ def decode(document, obj, emit_signals=True):
     if lattice_type == LatticeType.HONEYCOMB:
         doLattice = HoneycombDnaPart.latticeCoordToPositionXY
         isEven = HoneycombDnaPart.isEvenParity
+        print('setting it dude')
     elif lattice_type == LatticeType.SQUARE:
         doLattice = SquareDnaPart.latticeCoordToPositionXY
         isEven = SquareDnaPart.isEvenParity
@@ -100,6 +101,7 @@ def decode(document, obj, emit_signals=True):
     radius = DEFAULT_RADIUS
     for vh_num in sorted(vh_num_to_coord.keys()):
         row, col = vh_num_to_coord[vh_num]
+        # x, y = doLattice(radius, row, col, x_offset=1, y_offset=radius)
         x, y = doLattice(radius, row, col)
         props = property_dict[vh_num]
         z = convertToModelZ(props[-1])

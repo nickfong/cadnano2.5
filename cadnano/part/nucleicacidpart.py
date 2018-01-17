@@ -153,6 +153,8 @@ class NucleicAcidPart(Part):
         self._abstract_segment_id = None
         self._current_base_count = None
 
+        self.x_offset = kwargs.get('x_offset', )
+
         # Properties (NucleicAcidPart-specific)
         gps = self._group_properties
         gps["name"] = "NaPart%d" % self._count()

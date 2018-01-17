@@ -117,7 +117,7 @@ class GridItem(QGraphicsRectItem):
 
         for row in range(row_l, row_h):
             for column in range(col_l, col_h+1):
-                x, y = doLattice(radius, row, column, scale_factor=sf)
+                x, y = doLattice(radius, row, column, scale_factor=sf, x_offset=1, y_offset=radius)
                 if draw_lines:
                     if is_pen_down:
                         path.lineTo(x, -y)
@@ -169,7 +169,7 @@ class GridItem(QGraphicsRectItem):
         if draw_lines:
             for column in range(col_l, col_h+1):
                 for row in range(row_l, row_h):
-                    x, y = doLattice(radius, row, column, scale_factor=sf)
+                    x, y = doLattice(radius, row, column, scale_factor=sf, x_offset=1, y_offset=radius)
                     if is_pen_down and isEven(row, column):
                         path.lineTo(x, -y)
                         is_pen_down = False

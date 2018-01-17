@@ -1107,18 +1107,27 @@ class ShortestPathHelper(object):
                        scale_factor, radius):
         # TODO[NF]:  Docstring
         x_y_path = []
-        coordinate_path = ShortestPathHelper.shortestPathAStar(start=start, end=end, neighbor_map=neighbor_map,
-                                                               vh_set=vh_set, point_map=point_map)
+        coordinate_path = ShortestPathHelper.shortestPathAStar(start=start,
+                                                               end=end,
+                                                               neighbor_map=neighbor_map,
+                                                               vh_set=vh_set,
+                                                               point_map=point_map)
         for node in coordinate_path:
             row = -node[0]
             column = node[1]
             if grid_type is GridType.HONEYCOMB:
                 parity = 0 if HoneycombDnaPart.isOddParity(row=row, column=column) else 1
-                node_pos = HoneycombDnaPart.latticeCoordToPositionXY(radius=radius, row=row, column=column,
-                                                                     scale_factor=scale_factor)
+                node_pos = HoneycombDnaPart.latticeCoordToPositionXY(radius=radius,
+                                                                     row=row,
+                                                                     column=column,
+                                                                     scale_factor=scale_factor,
+                                                                     x_offset=1,
+                                                                     y_offset=radius)
             else:
                 parity = None
-                node_pos = SquareDnaPart.latticeCoordToPositionXY(radius=radius, row=row, column=column,
+                node_pos = SquareDnaPart.latticeCoordToPositionXY(radius=radius,
+                                                                  row=row,
+                                                                  column=column,
                                                                   scale_factor=scale_factor)
             x_y_path.append((node_pos[0], node_pos[1], parity))
 

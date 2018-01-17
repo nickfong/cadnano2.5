@@ -115,7 +115,7 @@ class GridItem(QGraphicsPathItem):
         draw_lines = self.draw_lines
         for i in range(row_l, row_h):
             for j in range(col_l, col_h+1):
-                x, y = doLattice(radius, i, j, scale_factor=sf)
+                x, y = doLattice(radius, i, j, scale_factor=sf, x_offset=0, y_offset=radius)
                 if draw_lines:
                     if is_pen_down:
                         path.lineTo(x, -y)
@@ -138,7 +138,7 @@ class GridItem(QGraphicsPathItem):
             for j in range(col_l, col_h+1):
                 # print("newcol")
                 for i in range(row_l, row_h):
-                    x, y = doLattice(radius, i, j, scale_factor=sf)
+                    x, y = doLattice(radius, i, j, scale_factor=sf, x_offset=0, y_offset=radius)
                     if is_pen_down and isEven(i, j):
                         path.lineTo(x, -y)
                         is_pen_down = False

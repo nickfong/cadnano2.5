@@ -18,6 +18,11 @@ def decode(document, obj, emit_signals=False):
     # TODO[NF]:  Use a constant here
     slice_view_type = meta.get('slice_view_type')
 
+    # Set the x and y offsets.  If the x and y offsets are not set in the file, assume that this file was made prior
+    # to the offset changes and use the old, default offsets
+    x_offset = meta.get('x_offset', 1)
+    y_offset = meta.get('y_offset', 0)
+
     # This assumes that the lattice without a specified grid type is a honeycomb lattice
     grid_type = meta.get('grid_type', GridType.HONEYCOMB)
 
@@ -26,7 +31,7 @@ def decode(document, obj, emit_signals=False):
                    emit_signals=emit_signals)
 
         if slice_view_type is None:
-            slice_view_type = determineSliceViewType(document, part_dict, grid_type)
+            slice_view_type = determineSliceViewType(document, part_dict, grid_type, x_offset, y_offset)
 
     modifications = obj['modifications']
 
@@ -38,10 +43,10 @@ def decode(document, obj, emit_signals=False):
             part.addModStrandInstance(strand, idx, mod_id)
 
     document.setSliceViewType(slice_view_type=slice_view_type)
+    document.setGridOffsets(x_offset, y_offset)
 # end def
 
-
-def determineSliceViewType(document, part_dict, grid_type):
+def determineSliceViewType(document, part_dict, grid_type, x_offset, y_offset):
     THRESHOLD = 0.0005
     vh_id_list = part_dict.get('vh_list')
     origins = part_dict.get('origins')
@@ -50,7 +55,11 @@ def determineSliceViewType(document, part_dict, grid_type):
         vh_x, vh_y = origins[vh_id]
 
         if grid_type is GridType.HONEYCOMB:
-            distance, point = HoneycombDnaPart.distanceFromClosestLatticeCoord(vh_x, vh_y, DEFAULT_RADIUS)
+            distance, point = HoneycombDnaPart.distanceFromClosestLatticeCoord(vh_x,
+                                                                               vh_y,
+                                                                               DEFAULT_RADIUS,
+                                                                               x_offset,
+                                                                               y_offset)
             if distance > THRESHOLD:
                 return SliceViewType.GRID
         elif grid_type is GridType.SQUARE:
@@ -58,7 +67,6 @@ def determineSliceViewType(document, part_dict, grid_type):
                 return SliceViewType.GRID
     return SliceViewType.SLICE
 # end def
-
 
 def decodePart(document, part_dict, grid_type, emit_signals=False):
     """ Decode a a deserialized Part dictionary
@@ -161,9 +169,10 @@ def decodePart(document, part_dict, grid_type, emit_signals=False):
                 'crossover_span_angle',
                 'max_vhelix_length',
                 'workplane_idxs']:
-        value = part_dict[key]
-        part.setProperty(key, value, use_undostack=False)
-        part.partPropertyChangedSignal.emit(part, key, value)
+        value = part_dict.get(key)
+        if value is not None:
+            part.setProperty(key, value, use_undostack=False)
+            part.partPropertyChangedSignal.emit(part, key, value)
 # end def
 
 

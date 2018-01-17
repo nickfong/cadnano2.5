@@ -2,11 +2,13 @@ from ast import literal_eval
 
 from PyQt5.QtCore import QPointF, QRectF, Qt
 from PyQt5.QtWidgets import QGraphicsItem, QGraphicsLineItem, QGraphicsRectItem, QGraphicsSceneEvent
+from cadnano.fileio import lattice
 
 from cadnano.proxies.cnenum import GridType, HandleType
 from cadnano.fileio.lattice import HoneycombDnaPart, SquareDnaPart
 from cadnano.controllers.nucleicacidpartitemcontroller import NucleicAcidPartItemController
 from cadnano.gui.palette import getBrushObj, getNoBrush, getNoPen, getPenObj
+from cadnano.part.nucleicacidpart import DEFAULT_RADIUS
 from cadnano.views.abstractitems.abstractpartitem import QAbstractPartItem
 from cadnano.views.resizehandles import ResizeHandleGroup
 from cadnano.views.sliceview.sliceextras import ShortestPathHelper
@@ -303,7 +305,15 @@ class SliceNucleicAcidPartItem(QAbstractPartItem):
 
         position = sender.locationQt(id_num=id_num,
                                      scale_factor=self.scale_factor)
-        coordinates = ShortestPathHelper.findClosestPoint(position=position, point_map=self.coordinates_to_xy)
+#        coordinates = ShortestPathHelper.findClosestPoint(position=position, point_map=self.coordinates_to_xy)
+        alpha_coordinates = ShortestPathHelper.findClosestPoint(position=position, point_map=self.coordinates_to_xy)
+        if self.griditem.grid_type is HoneycombDnaPart:
+            coordinates = lattice.HoneycombDnaPart.positionToLatticeCoord(DEFAULT_RADIUS, position[0], position[1],
+                                                                          x_offset=1, y_offset=DEFAULT_RADIUS)
+        else:
+            coordinates = lattice.SquareDnaPart.positionToLatticeCoord(DEFAULT_RADIUS, position[0], position[1])
+
+        print(alpha_coordinates, coordinates)
 
         assert id_num not in self.coordinates_to_vhid.values()
 

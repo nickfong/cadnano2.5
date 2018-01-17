@@ -91,6 +91,7 @@ def decode(document, obj, emit_signals=False):
     for vh_num in sorted(vh_num_to_coord.keys()):
         row, col = vh_num_to_coord[vh_num]
         x, y = doLattice(radius, row, col)
+#        x, y = doLattice(radius, row, col, x_offset=0, y_offset=radius)
         # print("%d:" % vh_num, x, y)
         part.createVirtualHelix(x, y, 0., num_bases,
                                 id_num=vh_num, use_undostack=False)
