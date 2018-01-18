@@ -287,7 +287,7 @@ class DocumentWindow(QMainWindow, ui_mainwindow.Ui_MainWindow):
 
         Returns: None
         """
-        print(type(self.controller.undoStack()))
+#        print(type(self.controller.undoStack()))
         self.actionUndo = self.controller.undoStack().createUndoAction(self)
         self.actionRedo = self.controller.undoStack().createRedoAction(self)
         self.actionUndo.setText(QApplication.translate("MainWindow", "Undo", None))

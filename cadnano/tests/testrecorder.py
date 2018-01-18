@@ -37,8 +37,7 @@ class TestRecorder():
                 pass
             else:
                 print('Received unhandled keypress %s' % event.key())
-        else:
-            pass
+#        else:
 #            print('Received unhandled event type %s' % event.type())
 
     def gridSceneEvent(self, event, sender):
@@ -55,9 +54,11 @@ class TestRecorder():
 
     def undoEvent(self):
         print('Received an undo event')
+        self.corpus.append('self.window.actionUndo()')
 
     def redoEvent(self):
         print('Received a redo event')
+        self.corpus.append('self.window.actionRedo()')
 
     def newHoneycombEvent(self):
         print('Received a new honeycomb event')
@@ -126,3 +127,9 @@ class TestRecorder():
 
     def cgenMouseMove(self):
         raise NotImplementedError
+
+    # Output generation
+    def output_corpus_to_file(self, path):
+        with open(path, 'w') as output_file:
+            for line in self.corpus:
+                output_file.write(line + '\n')
