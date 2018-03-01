@@ -692,6 +692,7 @@ class DocumentController(object):
             self.win.action_slice.setChecked(True)
             self.slice_view_showing = True
             slice_view_widget.show()
+            self.win.slice_graphics_view.zoomToFit()
         else:
             self.slice_view_showing = False
             slice_view_widget.hide()
@@ -717,6 +718,7 @@ class DocumentController(object):
             self.win.action_slice.setChecked(True)
             self.grid_view_showing = True
             grid_view_widget.show()
+            self.win.grid_graphics_view.zoomToFit()
         else:
             self.grid_view_showing = False
             grid_view_widget.hide()

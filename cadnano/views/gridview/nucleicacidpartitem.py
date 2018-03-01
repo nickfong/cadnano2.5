@@ -560,9 +560,9 @@ class GridNucleicAcidPartItem(QAbstractPartItem):
         Args:
             TYPE: Description
         """
-        thescene = self.scene()
-        theview = thescene.views()[0]
-        theview.zoomToFit()
+        view = self.scene().views()[0]
+        if view.isVisible():
+            view.zoomToFit()
     # end def
 
     ### EVENT HANDLERS ###

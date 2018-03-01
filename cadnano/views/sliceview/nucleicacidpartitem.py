@@ -634,9 +634,9 @@ class SliceNucleicAcidPartItem(QAbstractPartItem):
     def zoomToFit(self):
         """Ask the view to zoom to fit.
         """
-        thescene = self.scene()
-        theview = thescene.views()[0]
-        theview.zoomToFit()
+        view = self.scene().views()[0]
+        if view.isVisible():
+            view.zoomToFit()
     # end def
 
     ### EVENT HANDLERS ###
