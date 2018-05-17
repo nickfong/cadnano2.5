@@ -28,9 +28,11 @@ Thanks for opening an issue for cadnano2.5.  We're still working on implementing
 OS that `cadnano2.5` is being run on:  [operating system]
 
 Current branch:  [branch name]
+
 Current git hash:  [hash]
 
 You can get the current branch name by running `git rev-parse --abbrev-ref HEAD` in your terminal emulator that supports git.
+
 You can get the current hash by running `git rev-parse --short HEAD` in your terminal emulator that supports git.
 
 ### Additional Information
