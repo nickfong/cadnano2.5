@@ -46,7 +46,7 @@ class BitEnum(Enum):
         elif isinstance(other, EnumMask):
             return other & self
         else:
-            raise
+            raise TypeError
 
 
 class PartEnum(IntEnum):
